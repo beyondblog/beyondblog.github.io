@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>你好世界 | Occams Razor的博客</title>
+  <title>C 语言展开宏定义 | Occams Razor的博客</title>
   <meta name="author" content="Occams Razor">
   
-  <meta name="description" content="雷猴,我是堂吉诃德.">
+  <meta name="description" content="在C语言中如果用到宏函数的话,经常会遇到一些特别变扭的问题,例如明明把一段方法包装成一个函数在调用就不会出现bug，
+而如果封装成宏函数就很容易出现问题，大多多数问题都是变量重定义导致作用域改变了从而引发的空指针内存泄露。
+而且宏函数在编译期间的警告错误也不明显，gdb也不方便调试，所有有些时候我们想把宏函数展开一下看看到底是什么。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="你好世界"/>
+  <meta property="og:title" content="C 语言展开宏定义"/>
   <meta property="og:site_name" content="Occams Razor的博客"/>
 
   
@@ -205,17 +207,25 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2014-03-02T23:28:39.000Z"><a href="/2014/03/03/hello-world/">3月 3 2014</a></time>
+        <time datetime="2014-03-16T03:55:58.000Z"><a href="/2014/03/16/c-语言展开宏定义/">3月 16 2014</a></time>
       
       
   
-    <h1 class="title">你好世界</h1>
+    <h1 class="title">C 语言展开宏定义</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>雷猴,我是堂吉诃德.</p>
+        <p>在C语言中如果用到宏函数的话,经常会遇到一些特别变扭的问题,例如明明把一段方法包装成一个函数在调用就不会出现bug，
+而如果封装成宏函数就很容易出现问题，大多多数问题都是变量重定义导致作用域改变了从而引发的空指针内存泄露。
+而且宏函数在编译期间的警告错误也不明显，gdb也不方便调试，所有有些时候我们想把宏函数展开一下看看到底是什么。
+<a id="more"></a></p>
+<p>gcc -E 源代码.c -o 源代码.i</p>
+<p>这个命令会在当前路径下生成一个.i问文件,打开开你就能看到展开后的源代码，然后基本上复制粘贴到你的源代码.c的文件里面在make一下,
+就能知道问题的所在了 LOL</p>
+<p>还有一种方法是调试阶段用的就是载编译的时候添加 -gdwarf-2 -g3
+然后gdb 打开调用 macro expand 宏定义体（参数) 就可以了</p>
 
       
     </div>
@@ -223,6 +233,11 @@
       
         
         
+  
+  <div class="tags">
+    <a href="/tags/C/">C</a>
+  </div>
+
         
       
       <div class="clearfix"></div>

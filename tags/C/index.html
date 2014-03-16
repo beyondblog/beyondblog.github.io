@@ -3,15 +3,13 @@
 <head>
   <meta charset="utf-8">
   
-  <title>你好世界 | Occams Razor的博客</title>
+  <title>C | Occams Razor的博客</title>
   <meta name="author" content="Occams Razor">
-  
-  <meta name="description" content="雷猴,我是堂吉诃德.">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="你好世界"/>
+  
   <meta property="og:site_name" content="Occams Razor的博客"/>
 
   
@@ -199,29 +197,39 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title tag">C</h2>
+
+
+  
+    <article class="post">
   
   <div class="post-content">
     <header>
       
         <div class="icon"></div>
-        <time datetime="2014-03-02T23:28:39.000Z"><a href="/2014/03/03/hello-world/">3月 3 2014</a></time>
+        <time datetime="2014-03-16T03:55:58.000Z"><a href="/2014/03/16/c-语言展开宏定义/">3月 16 2014</a></time>
       
       
   
-    <h1 class="title">你好世界</h1>
+    <h1 class="title"><a href="/2014/03/16/c-语言展开宏定义/">C 语言展开宏定义</a></h1>
   
 
     </header>
     <div class="entry">
       
-        <p>雷猴,我是堂吉诃德.</p>
+        <p>在C语言中如果用到宏函数的话,经常会遇到一些特别变扭的问题,例如明明把一段方法包装成一个函数在调用就不会出现bug，
+而如果封装成宏函数就很容易出现问题，大多多数问题都是变量重定义导致作用域改变了从而引发的空指针内存泄露。
+而且宏函数在编译期间的警告错误也不明显，gdb也不方便调试，所有有些时候我们想把宏函数展开一下看看到底是什么。
 
       
     </div>
     <footer>
       
         
+          <div class="alignleft">
+            <a href="/2014/03/16/c-语言展开宏定义/#more" class="more-link">Read More</a>
+          </div>
         
         
       
@@ -231,24 +239,15 @@
 </article>
 
 
-<section id="comment">
-<!-- Duoshuo Comment BEGIN -->
-		<div class="ds-thread"></div>
-		<script type="text/javascript">
-		var duoshuoQuery = {short_name:"beyondblog"};
-		(function() {
-		 var ds = document.createElement('script');
-		 ds.type = 'text/javascript';ds.async = true;
-		 ds.src = 'http://static.duoshuo.com/embed.js';
-		 ds.charset = 'UTF-8';
-		 (document.getElementsByTagName('head')[0] 
-		  || document.getElementsByTagName('body')[0]).appendChild(ds);
-		 })();
-	</script>
-<!-- Duoshuo Comment END -->
-</section>
 
 
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
 </div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">
