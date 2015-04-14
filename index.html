@@ -10,14 +10,34 @@
                 margin: 0px;
             }
             #content {
-                position: absolute;
-                left: 50%;
-                top: 50%;
+                text-align: center;
+            }
+
+            #content ul {
+                border: dashed 1px salmon;
+                height: 500px;
+                margin: auto 200px;
+                list-style-type: none;
+            }
+
+            #content ul li {
+                margin: 10px auto;
+            }
+
+            #content a {
+                text-decoration: none;
             }
         </style>
     </head>
 
     <body>
-        <div id="content">Welcome !</div>
+        <img src='images/nyancat.gif' />
+        <div id='content'>
+            <ul>
+                <li> <a href='https://github.com/beyondblog/go-debug-example'>使用用GDB调试Go语言</a> </li>
+            </ul>
+        </div>
+        <audio autoplay loop>
+        <source src="sound/nyancat.mp3" type="audio/mpeg"><source src="sound/nyancat.ogg" type="audio/ogg"></audio>
     </body>
 </html>
