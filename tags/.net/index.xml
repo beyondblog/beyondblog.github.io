@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>.Net on Beyondblog</title>
+    <link>http://beyondblog.github.io/tags/index.net/</link>
+    <description>Recent content in .Net on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 01 Aug 2016 08:07:10 +0800</lastBuildDate>
+    <atom:link href="http://beyondblog.github.io/tags/.net/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>.NET core for docker</title>
+      <link>http://beyondblog.github.io/post/dotnet_core_for_docker/</link>
+      <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/dotnet_core_for_docker/</guid>
+      <description>
+
+&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
+
+&lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; docker pull microsoft/dotnet:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet new -t web
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果本地没有 dotnew 运行时可以docker run 一个&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面这个命令的意思是 让 docker 运行(&lt;code&gt;docker run&lt;/code&gt;)一个dotnet:latest的镜像(&lt;code&gt;microsoft/dotnet:latest&lt;/code&gt;) 并且把本地的/home/hello_dotnet卷路径挂载到容器的/home/hello_dotnet 下面(&lt;code&gt;-v /home/hello_dotnet/:/home/hello_dotnet/&lt;/code&gt;)然后提供交互式模式能够输入输出(&lt;code&gt;-it&lt;/code&gt;)退出之后自动删除容器(&lt;code&gt;--rm&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;然后进入容器生成类似这样&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 home]# docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+root@193fb1cf32a6:/# cd /home/hello_dotnet/
+root@193fb1cf32a6:/home/hello_dotnet# dotnet new -t web
+Created new C# project in /home/hello_dotnet.
+root@193fb1cf32a6:/home/hello_dotnet# ls
+Controllers  Data  Models  Program.cs  README.md  Services  Startup.cs  Views  appsettings.json  bower.json  gulpfile.js  package.json  project.json  web.config  wwwroot
+root@193fb1cf32a6:/home/hello_dotnet#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后更新下包依赖&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet restore
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;直接运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet run
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;修改一下默认的监听端口 默认是 localhost:5000 不好做代理修改成 0.0.0.0
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+
+namespace WebApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseUrls(&amp;quot;http://0.0.0.0:5000&amp;quot;) //添加这一行
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup&amp;lt;Startup&amp;gt;()
+                .Build();
+
+            host.Run();
+        }
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ok 没啥问题 publish 一下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@193fb1cf32a6:/home/hello_dotnet# dotnet publish
+Publishing hello_dotnet for .NETCoreApp,Version=v1.0
+No executable found matching command &amp;quot;npm&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;额,并不能够 publish 提示找不到 npm, npm 这个不是 node 的包依赖工具么。。
+经过查看发现这个生成的 web 依赖了 gulp 所以很蛋疼 默认的容器只有运行时环境(可能主要是为了精简镜像)需要自己在安装 node&lt;/p&gt;
+
+&lt;p&gt;这里可以在容器里面把 node 装好或者去其他机器上 publish&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get update &amp;amp; apt-get install npm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;并且安装完 npm 还不够 还需要 安装 bower gulp&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;No executable found matching command &amp;quot;bower&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;No executable found matching command &amp;quot;gulp&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;npm install bower -g
+
+npm install gulp -g
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ok 结束了&amp;hellip;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Project hello_dotnet (.NETCoreApp,Version=v1.0) was previously compiled. Skipping compilation.
+Configuring the following project for use with IIS: &#39;/home/hello_dotnet/bin/Debug/netcoreapp1.0/publish&#39;
+Updating web.config at &#39;/home/hello_dotnet/bin/Debug/netcoreapp1.0/publish/web.config&#39;
+Configuring project completed successfully
+publish: Published to /home/hello_dotnet/bin/Debug/netcoreapp1.0/publish
+Published 1/1 projects successfully
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;退出容器回到服务器上&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@193fb1cf32a6:/home/hello_dotnet/bin/Debug/netcoreapp1.0# exit
+exit
+[root@172-16-0-20 home]# ls
+data  docker-compose  hello_dotnet  java  xiaoming  xiaoqiu
+[root@172-16-0-20 home]# cd hello_dotnet/
+[root@172-16-0-20 hello_dotnet]# ls
+appsettings.json  bin  bower.json  Controllers  Data  gulpfile.js  Models  node_modules  obj  package.json  Program.cs  project.json  project.lock.json  README.md  Services  Startup.cs  Views  web.config  wwwroot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;代码都已经创建好了,现在只要找个运行时 dotnet hello_dotnet.dll 就可以启动 web 了&lt;/p&gt;
+
+&lt;p&gt;打包一个镜像 写个 dockerfile 就好&lt;/p&gt;
+
+&lt;p&gt;先新建个工作目录整理下结构&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 dotnet]# tree -L 2
+.
+├── Dockerfile
+└── hello_dotnet
+    ├── appsettings.json
+    ├── bin
+    ├── bower.json
+    ├── Controllers
+    ├── Data
+    ├── gulpfile.js
+    ├── Models
+    ├── node_modules
+    ├── obj
+    ├── package.json
+    ├── Program.cs
+    ├── project.json
+    ├── project.lock.json
+    ├── README.md
+    ├── Services
+    ├── Startup.cs
+    ├── Views
+    ├── web.config
+    └── wwwroot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 dotnet]# docker build -t &amp;quot;hello_dotnet:1.0&amp;quot; ./
+
+[root@172-16-0-20 dotnet]# docker build -t &amp;quot;hello_dotnet:1.0&amp;quot; ./
+Sending build context to Docker daemon 53.04 MB
+Step 1 : FROM microsoft/dotnet:latest
+ ---&amp;gt; 4028809f66a4
+Step 2 : COPY hello_dotnet /home/www
+ ---&amp;gt; 600558b4e65d
+Removing intermediate container 0c05fc314674
+Step 3 : WORKDIR /home/www
+ ---&amp;gt; Running in b5b029517595
+ ---&amp;gt; c9f05e277de9
+Removing intermediate container b5b029517595
+Step 4 : EXPOSE 8080
+ ---&amp;gt; Running in 2a00bea9393c
+ ---&amp;gt; b921fe0482f0
+Removing intermediate container 2a00bea9393c
+Step 5 : CMD dotnet hello_dotnet.dll
+ ---&amp;gt; Running in f770b366be81
+ ---&amp;gt; 11027359f344
+Removing intermediate container f770b366be81
+Successfully built 11027359f344
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 dotnet]# docker run  --rm -it -p 8888:5000 hello_dotnet:1.0
+info: Microsoft.Extensions.DependencyInjection.DataProtectionServices[0]
+      User profile is available. Using &#39;/root/.aspnet/DataProtection-Keys&#39; as key repository; keys will not be encrypted at rest.
+Hosting environment: Production
+Content root path: /home/www
+Now listening on: http://0.0.0.0:5000
+Application started. Press Ctrl+C to shut down.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;浏览器访问 &lt;a href=&#34;http://172.16.0.20:8888&#34;&gt;http://172.16.0.20:8888&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ok 一切正常
+&lt;img src=&#34;http://beyondblog.github.io/img/web.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;当然也可以用守护进程的模式运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run  -d  -p 8888:5000 hello_dotnet:1.0 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;参考文档&#34;&gt;参考文档&lt;/h3&gt;
+
+&lt;p&gt;[0] &lt;a href=&#34;https://dotnet.github.io&#34;&gt;https://dotnet.github.io&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[1] &lt;a href=&#34;https://docs.docker.com/engine/reference/builder&#34;&gt;https://docs.docker.com/engine/reference/builder&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,525 @@
+<!doctype html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Beyondblog</title>
+        <meta name="author">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="generator" content="Hugo 0.16" />
+          <link href="http://beyondblog.github.io/post/index.xml" rel="alternate" type="application/rss+xml" title="Beyondblog" />
+          <link href="http://beyondblog.github.io/post/index.xml" rel="feed" type="application/rss+xml" title="Beyondblog" />
+        <link href='//fonts.useso.com/css?family=Roboto:400,300,700|Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="http://beyondblog.github.io/css/styles.css">
+        <link rel="icon" href="http://beyondblog.github.io/favicon.ico">
+        <link rel="apple-touch-icon" href="http://beyondblog.github.io/apple-touch-icon.png" />
+        <link rel="stylesheet" href="http://beyondblog.github.io/css/highlightjs/solarized-dark.css">
+        <script src="http://beyondblog.github.io/js/vendor/modernizr-2.8.0.min.js"></script>
+        <style>
+        .site-header h2 .logo {
+        background: url(http://beyondblog.github.io/img/desk.png) no-repeat 0 0;
+        }
+        @media (min--moz-device-pixel-ratio: 1.3), (-o-min-device-pixel-ratio: 2.6 / 2), (-webkit-min-device-pixel-ratio: 1.3), (min-device-pixel-ratio: 1.3), (min-resolution: 1.3dppx) {
+          .site-header h2 .logo {
+            background-image: url(http://beyondblog.github.io/img/desk.png);
+        }}
+       .site-header {
+         background: #2a373d url(http://beyondblog.github.io/img/desk.png) no-repeat center center;
+         z-index: -1;
+        }
+        </style>
+    </head>
+    <body>
+        
+        <header class="site-header">
+          <div class="transparent-layer">
+              <h2></h2>
+          </div>
+        </header>
+
+
+<div class="container clearfix">
+    <main role="main" class="content">
+        <article class="post">
+            <a class="btn home" href="http://beyondblog.github.io/" title="Back to home">&laquo; Back to home</a>
+            
+<h1><a href="http://beyondblog.github.io/post/consul_fabio_load_balancer/" title="Consul &#43; fabio 实现自动服务发现、负载均衡">Consul &#43; fabio 实现自动服务发现、负载均衡</a></h1>
+
+<footer class="post-info">Posted on <span class="post-meta"><time datetime="2016.07.22">2016.07.22</time>
+
+    &middot; Tagged in
+        
+        <a href="http://beyondblog.github.io/tags/consul">consul</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/fabio">fabio</a>
+        
+    
+
+</span>
+</footer>
+
+            
+
+<h3 id="摘要">摘要</h3>
+
+<ul>
+<li>Consul 介绍</li>
+<li>fabio  介绍</li>
+<li>服务发现的特点</li>
+<li>工作原理</li>
+<li>Demo</li>
+<li>结合kubernetes扩容</li>
+</ul>
+
+<h3 id="consul">Consul</h3>
+
+<p>hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队</p>
+
+<p><a href="https://www.consul.io/">Consul</a> 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件
+比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 <a href="http://dockone.io/article/300">Consul和ZooKeeper的区别</a></p>
+
+<h3 id="fabio">fabio</h3>
+
+<p>fabio 是 ebay 团队用 golang 开发的一个快速、简单零配置能够让 consul 部署的应用快速支持 http(s) 的负载均衡路由器
+因为 consul 支持服务注册与健康检查所以 fabio 能够零配置提供负载，升级部署从未如此简单。
+根据项目的介绍fabio 能提供每秒15000次请求</p>
+
+<p>有了这两个组件非常容易做服务发现与自动负载均衡, &ldquo;神器在手、天下我有!&rdquo; ^ _ ^</p>
+
+<h3 id="服务发现的特点">服务发现的特点</h3>
+
+<p>服务与服务之间的调用需要在配置文件中填写好主机和端口,不易于维护且分布式环境中不易于部署与扩容
+那么此时就需要考虑服务启动的时候自己把主机和端口以及一些其他信息注册到注册中心，这样其他服务可以从中找到它
+甚至更为简单的注册完毕后通过 DNS 的方式来『寻址』。比如 Zookeepr 可以很好的完成这个工作，但是其中还有一个弊端就是服务的健康检查服务注册到注册中心之后如何保证这个服务一定可用？此时就需要自己来写逻辑当服务不可用的时候自动从注册中心下线掉。 然后Consul 可以很轻易的解决这个问题</p>
+
+<h3 id="工作原理">工作原理</h3>
+
+<p>Consul 提供了一套健康检测机制简单的说针对 http 类型的服务(consul 也支持 其他类型例如tcp)在注册的时候可以顺便注册下健康检测的信息，提供一个健康检测的地址(url)以及一个频率超时时间这样的话 consul 会定期的来请求当状态码是200的时候设置次服务是健康的状态否则是故障状态</p>
+
+<p>既然注册到consul的服务能够自己维护健康状态此时 fabio 的工作就很简单了！ 就是直接从consul 注册表里面取出健康的服务根据服务注册时候的 tags 配置自动创建自己的路由表，然后当一个 http 请求过来的时候自动去做负载均衡</p>
+
+<p>简单的流程图如下:</p>
+
+<pre><code>======    服务注册     =========       =========
+  A服务   &lt;------&gt;      consul集群  ----&gt;  健康的 A/不健康的 A 集群
+======    健康检查     =========       =========
+                                         ^
+                                         | 加入/移出路由表
+                                         |
+                                      ========
+                                       fabio 集群
+                                      ========
+                                         |
+                                         | A服务   如果找到则成功路由否则返回错误
+                                         V
+                                        http 请求
+
+</code></pre>
+
+<h3 id="demo">Demo</h3>
+
+<p>这里我们开始写一个 demo 服务来体验一波 consul+ fabio 顺便用 docker + k8s 来编排扩容</p>
+
+<p>因为 consul + fabio 都支持 docker 的方式运行这里均以 docker 方式为例子</p>
+
+<p>docker pull magiconair/fabio</p>
+
+<p><a href="https://hub.docker.com/_/consul/">docker pull consul</a></p>
+
+<p>consul 可以用集群的方式开发环境中也可以用 dev 模式 可以<a href="https://hub.docker.com/_/consul/">参考这里</a></p>
+
+<p>这里可以参考我整理的单机部署 consul 集群的 docker compose 配置</p>
+
+<pre><code>version: '2'
+
+services:
+  consul_server_1:
+    image: &quot;consul:latest&quot;
+    container_name: &quot;consul_server_1&quot;
+    environment:
+      CONSUL_LOCAL_CONFIG: '{&quot;leave_on_terminate&quot;: true}'
+    networks:
+      app_net:
+        ipv4_address: 172.17.0.3
+    command: &quot;agent -server -bind=172.17.0.3 -client=172.17.0.3 -retry-join=172.17.0.2&quot;
+
+  consul_server_2:
+    image: &quot;consul:latest&quot;
+    container_name: &quot;consul_server_2&quot;
+    ports:
+      - &quot;8600:8600&quot;
+      - &quot;8500:8500&quot;
+    networks:
+      app_net:
+        ipv4_address: 172.17.0.4
+    command: &quot;agent -server -bind=172.17.0.4 -client=172.17.0.4 -retry-join=172.17.0.3 -ui&quot;
+
+  consul_server_3:
+    image: &quot;consul:latest&quot;
+    container_name: &quot;consul_server_3&quot;
+    environment:
+      CONSUL_LOCAL_CONFIG: '{&quot;leave_on_terminate&quot;: true}'
+    networks:
+      app_net:
+        ipv4_address: 172.17.0.5
+    command: &quot;agent -server -bind=172.17.0.5 -client=172.17.0.5 -retry-join=172.17.0.4 -bootstrap-expect=3&quot;
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.17.0.0/24
+</code></pre>
+
+<p>也可以按照 docker hub 上的文档自己部署, 启动成功之后访问下 consul ui</p>
+
+<p><img src="/img/consul-ui.png" alt="consul" /></p>
+
+<p>然后部署 faibo
+docker-compose.yml</p>
+
+<pre><code>fabio:
+  image: &quot;magiconair/fabio&quot;
+  ports:
+    - &quot;9998:9998&quot;
+    - &quot;9999:9999&quot;
+  volumes:
+    - ./fabio.properties:/etc/fabio/fabio.properties
+</code></pre>
+
+<p>fabio 虽然说是零配置但是某些情况下还是需要个性化配置一些东西,此时可以去写一个简单的配置<a href="https://raw.githubusercontent.com/eBay/fabio/master/fabio.properties">fabio.properties</a></p>
+
+<p>指定了 consul 的地址端口以及自身的一些统计信息等等</p>
+
+<pre><code> registry.consul.register.addr = 172.16.0.21:9998
+
+ registry.consul.addr = 172.16.0.21:8500
+ 
+ metrics.target = stdout
+</code></pre>
+
+<p><img src="/img/fabio.png" alt="fabio" /></p>
+
+<p>fabio 不仅仅可以与 consul 结合可以以手动写一些路由规则
+语法如下</p>
+
+<pre><code>route add &lt;svc&gt; &lt;src&gt; &lt;dst&gt; weight &lt;w&gt; tags &quot;&lt;t1&gt;,&lt;t2&gt;,...&quot;
+  - Add route for service svc from src to dst and assign weight and tags
+
+route add &lt;svc&gt; &lt;src&gt; &lt;dst&gt; weight &lt;w&gt;
+  - Add route for service svc from src to dst and assign weight
+
+</code></pre>
+
+<p><a href="https://github.com/eBay/fabio/wiki/Routing#manual-overrides">详情请移步</a></p>
+
+<p>此时安装部署完毕之后跑一个 demo 试试</p>
+
+<p>官方提供了一个简单的实现</p>
+
+<pre><code>package main
+
+import (
+	&quot;flag&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+	&quot;net&quot;
+	&quot;net/http&quot;
+	&quot;os&quot;
+	&quot;os/signal&quot;
+	&quot;path/filepath&quot;
+	&quot;strconv&quot;
+	&quot;strings&quot;
+
+	&quot;github.com/magiconair/fabio-example/_third_party/github.com/hashicorp/consul/api&quot;
+)
+
+func main() {
+	var addr, name, prefix string
+	flag.StringVar(&amp;addr, &quot;addr&quot;, &quot;127.0.0.1:5000&quot;, &quot;host:port of the service&quot;)
+	flag.StringVar(&amp;name, &quot;name&quot;, filepath.Base(os.Args[0]), &quot;name of the service&quot;)
+	flag.StringVar(&amp;prefix, &quot;prefix&quot;, &quot;&quot;, &quot;comma-sep list of host/path prefixes to register&quot;)
+	flag.Parse()
+
+	if prefix == &quot;&quot; {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	// register prefixes
+	prefixes := strings.Split(prefix, &quot;,&quot;)
+	for _, p := range prefixes {
+		http.HandleFunc(p, func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, &quot;Serving %s from %s on %s\n&quot;, r.RequestURI, name, addr)
+		})
+	}
+
+	// start http server
+	go func() {
+		log.Printf(&quot;Listening on %s serving %s&quot;, addr, prefix)
+		if err := http.ListenAndServe(addr, nil); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// register consul health check endpoint
+	http.HandleFunc(&quot;/health&quot;, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, &quot;OK&quot;)
+	})
+
+	// build urlprefix-host/path tag list
+	// e.g. urlprefix-/foo, urlprefix-/bar, ...
+	var tags []string
+	for _, p := range prefixes {
+		tags = append(tags, &quot;urlprefix-&quot;+p)
+	}
+
+	// get host and port as string/int
+	host, portstr, err := net.SplitHostPort(addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	port, err := strconv.Atoi(portstr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// register service with health check
+	serviceID := name + &quot;-&quot; + addr
+	service := &amp;api.AgentServiceRegistration{
+		ID:      serviceID,
+		Name:    name,
+		Port:    port,
+		Address: host,
+		Tags:    tags,
+		Check: &amp;api.AgentServiceCheck{
+			HTTP:     &quot;http://&quot; + addr + &quot;/health&quot;,
+			Interval: &quot;1s&quot;,
+			Timeout:  &quot;1s&quot;,
+		},
+	}
+
+	client, err := api.NewClient(api.DefaultConfig())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Agent().ServiceRegister(service); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf(&quot;Registered service %q in consul with tags %q&quot;, name, strings.Join(tags, &quot;,&quot;))
+
+	// run until we get a signal
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, os.Kill)
+	&lt;-quit
+
+	// deregister service
+	if err := client.Agent().ServiceDeregister(serviceID); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf(&quot;Deregistered service %q in consul&quot;, name)
+}
+
+</code></pre>
+
+<p>程序在启动的时候去注册并且注册了健康检测的地址/health,在退出的时候去取消注册,往 consul注册服务的时候有个 tags 可以允许给这个服务传一个标签 fabio 根据这个参数来自动关联路由映射</p>
+
+<p>先跑下试试</p>
+
+<pre><code>CONSUL_HTTP_ADDR=172.16.0.21:8500 ./fabio-example -addr=172.16.0.17:9876 -prefix=a.com/
+</code></pre>
+
+<p>此时 consul 已经收到注册 fabio 路由已经添加</p>
+
+<pre><code>#	Service	Host	Path	Dest	Weight
+1	fabio-example	a.com	/	http://172.16.0.17:9876/	100%
+</code></pre>
+
+<pre><code>➜  ~ curl -iv -H 'Host: a.com' 172.16.0.21:9999/
+*   Trying 172.16.0.21...
+* Connected to 172.16.0.21 (172.16.0.21) port 9999 (#0)
+&gt; GET / HTTP/1.1
+&gt; Host: a.com
+&gt; User-Agent: curl/7.43.0
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+&lt; Content-Length: 49
+Content-Length: 49
+&lt; Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8
+&lt; Date: Fri, 22 Jul 2016 01:01:28 GMT
+Date: Fri, 22 Jul 2016 01:01:28 GMT
+
+&lt;
+Serving / from fabio-example on 172.16.0.17:9876
+* Connection #0 to host 172.16.0.21 left intact
+</code></pre>
+
+<h3 id="结合kubernetes扩容">结合kubernetes扩容</h3>
+
+<p>如果基于 k8s 做编排的话需要做一些修改例如: ip端口 要动态的从容器里面获取,服务启动的时候那个 tags prefix 需要配置,可以参考<a href="https://github.com/eBay/fabio/wiki">fabio的文档</a></p>
+
+<p>这里我就用 java 快速搭建了一个, Spring框架提供了服务发现一条龙服务针对 consul 的就是 <a href="https://github.com/spring-cloud/spring-cloud-consul/blob/master/docs/src/main/asciidoc/spring-cloud-consul.adoc">spring-cloud-consul</a> 只要一行代码 几行配置就能快速使用 ：)
+Application类上添加@EnableDiscoveryClient注解</p>
+
+<p>application.yml</p>
+
+<pre><code>spring:
+  cloud:
+    consul:
+      discovery:
+        healthCheckPath: ${management.contextPath}/health  #健康检测的路径 
+        healthCheckInterval: 15s #健康检测的频率
+        tags: urlprefix-api.xxxx.com/  #fabio 的路由规则
+</code></pre>
+
+<p>ps: spring 健康检测可以用 spring-boot-starter-actuator快速实现</p>
+
+<p>然后 k8s 里面需要扩容就可以任性扩容了,因为如果不采用服务发现的方式 k8s 扩容时候可能 http 请求会转发到启动完毕的容器但是服务并不可用（例如 java 进程虽然启动了但是初始化可能需要几分钟&hellip;）</p>
+
+<p>感受一下 扩容10个</p>
+
+<pre><code>$ kubectl scale --replicas=10 rc api
+
+$ kubectl get pods
+
+[root@172-16-0-17 fabio-example]# kubectl get pods
+NAME                                             READY     STATUS    RESTARTS   AGE
+api-6xytx                                         1/1       Running   0          11s
+api-9e5838075aae036e2dc971984855e379-ac30s        1/1       Running   0          14h
+api-dfmtv                                         1/1       Running   0          11s
+api-eo01h                                         1/1       Running   0          11s
+api-hn1kv                                         1/1       Running   0          11s
+api-iyqmg                                         1/1       Running   0          11s
+api-k32ud                                         1/1       Running   0          11s
+api-q10a7                                         1/1       Running   0          11s
+api-re7e1                                         1/1       Running   0          11s
+api-tm2pk                                         1/1       Running   0          11s
+
+</code></pre>
+
+<p>10秒中瞬间扩容至10个 然后看下 consul 与 fabio</p>
+
+<p><img src="/img/docker-consul.png" alt="docker-consul" /></p>
+
+<p>fabio</p>
+
+<pre><code>
+#	Service	Host	Path	Dest	            Weight
+1	api	api.com   	/	http://172.31.9.3:8080/	    10%
+2	api	api.com  	/	http://172.31.9.2:8080/	    10%
+3	api	api.com	    /	http://172.31.82.6:8080/	10%
+4	api	api.com	    /	http://172.31.82.4:8080/	10%
+5	api	api.com	    /	http://172.31.28.3:8080/	10%
+6	api	api.com   	/	http://172.31.28.2:8080/	10%
+7	api	api.com	    /	http://172.31.23.7:8080/	10%
+8	api	api.com	    /	http://172.31.23.2:8080/	10%
+9	api	api.com	    /	http://172.31.12.6:8080/	10%
+10	api	api.com    	/	http://172.31.12.4:8080/	10%
+</code></pre>
+
+<p>此时在收缩至一个的时候 fabio 也能立即更新路由表</p>
+
+<p>===
+通过 fabio+consul 的结合可以很轻松的在分布式环境中进行部署与扩容
+另外 consul 还提供了一切其他的组建也可以完成类似的功能例如 [consul-template]（<a href="https://github.com/hashicorp/consul-template）">https://github.com/hashicorp/consul-template）</a></p>
+
+<p>参考链接</p>
+
+<ul>
+<li><a href="https://github.com/eBay/fabio/wiki/Configuration">https://github.com/eBay/fabio/wiki/Configuration</a></li>
+<li><a href="https://www.consul.io/docs/agent/basics.html">https://www.consul.io/docs/agent/basics.html</a></li>
+<li><a href="http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html">http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html</a></li>
+</ul>
+
+            <ul class="share-buttons">
+    <li>Share this article:</li>
+    <li>
+        <a class="icon-facebook-squared" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fbeyondblog.github.io%2fpost%2fconsul_fabio_load_balancer%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" title="Share on Facebook"></a>
+    </li>
+    <li>
+        <a class="icon-twitter" href="https://twitter.com/share?text=Consul%20%2b%20fabio%20%e5%ae%9e%e7%8e%b0%e8%87%aa%e5%8a%a8%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0%e3%80%81%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1&amp;url=http%3a%2f%2fbeyondblog.github.io%2fpost%2fconsul_fabio_load_balancer%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;" title="Tweet this article"></a>
+    </li>
+    <li>
+        <a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fbeyondblog.github.io%2fpost%2fconsul_fabio_load_balancer%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;" title="Share on Google&#43;"></a>
+    </li>
+    <li>
+        <a class="icon-linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fbeyondblog.github.io%2fpost%2fconsul_fabio_load_balancer%2f&title=Consul%20%2b%20fabio%20%e5%ae%9e%e7%8e%b0%e8%87%aa%e5%8a%a8%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0%e3%80%81%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1" onclick="window.open(this.href, 'linkedin-share', 'width=600,height=494');return false;" title="Share on Linkedin"></a>
+    </li>
+</ul>
+
+        </article>
+        <div class="comments">
+            <h3>Comments</h3>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'beyondblog-1';
+    var disqus_identifier = 'http:\/\/beyondblog.github.io\/post\/consul_fabio_load_balancer\/';
+    var disqus_title = 'Consul \x2b fabio 实现自动服务发现、负载均衡';
+    var disqus_url = 'http:\/\/beyondblog.github.io\/post\/consul_fabio_load_balancer\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        </div>
+    </main>
+    <aside class="author">
+  <img class="profile-image" src="http://beyondblog.github.io/img/profile.png" alt="beyondblog" />
+  <p class="name">by 
+  <strong>beyondblog</strong></p>
+  <p class="address">BeiJing</p>
+  <p class="link"></p>
+  <ul class="social">
+    
+<li><a href="//twitter.com/beyondblog" class="icon-twitter" target="_blank" title="Twitter"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//github.com/beyondblog" class="icon-github" target="_blank" title="Github"></a></li>
+
+
+
+
+<li><a href="http://beyondblog.github.io/post/index.xml" class="icon-rss" target="_blank" title="RSS"></a></li>
+
+  </ul>
+  <br><br>
+</aside>
+
+</div>
+
+<footer class="main-footer">
+  <div class="container clearfix">
+        <a class="icon-rss" href="http://beyondblog.github.io/post/index.xml" title="RSS"></a>
+        <p>&copy; 2016 &middot; beyondblog</p>
+  </div>
+</footer>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>window.jQuery || document.write('<script src="http:\/\/beyondblog.github.io\/js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
+<script src="http://beyondblog.github.io/js/plugins.js"></script>
+
+</body>
+</html>
+

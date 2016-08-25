@@ -1,0 +1,265 @@
+<!doctype html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Docker &middot; Beyondblog</title>
+        <meta name="author">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="generator" content="Hugo 0.16" />
+          <link href="http://beyondblog.github.io/post/index.xml" rel="alternate" type="application/rss+xml" title="Beyondblog" />
+          <link href="http://beyondblog.github.io/post/index.xml" rel="feed" type="application/rss+xml" title="Beyondblog" />
+        <link href='//fonts.useso.com/css?family=Roboto:400,300,700|Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="http://beyondblog.github.io/css/styles.css">
+        <link rel="icon" href="http://beyondblog.github.io/favicon.ico">
+        <link rel="apple-touch-icon" href="http://beyondblog.github.io/apple-touch-icon.png" />
+        <link rel="stylesheet" href="http://beyondblog.github.io/css/highlightjs/solarized-dark.css">
+        <script src="http://beyondblog.github.io/js/vendor/modernizr-2.8.0.min.js"></script>
+        <style>
+        .site-header h2 .logo {
+        background: url(http://beyondblog.github.io/img/desk.png) no-repeat 0 0;
+        }
+        @media (min--moz-device-pixel-ratio: 1.3), (-o-min-device-pixel-ratio: 2.6 / 2), (-webkit-min-device-pixel-ratio: 1.3), (min-device-pixel-ratio: 1.3), (min-resolution: 1.3dppx) {
+          .site-header h2 .logo {
+            background-image: url(http://beyondblog.github.io/img/desk.png);
+        }}
+       .site-header {
+         background: #2a373d url(http://beyondblog.github.io/img/desk.png) no-repeat center center;
+         z-index: -1;
+        }
+        </style>
+    </head>
+    <body>
+        
+        <header class="site-header">
+          <div class="transparent-layer">
+              <h2></h2>
+          </div>
+        </header>
+
+<div class="container clearfix">
+    <main role="main" class="content">
+        <a class="btn home" href="http://beyondblog.github.io/" title="Back to home">&laquo; Back to home</a>
+        
+        
+            <article class="post">
+    
+<h1><a href="http://beyondblog.github.io/post/manual_install_kubernetes/" title="Centos 手动安装 Kubernetes">Centos 手动安装 Kubernetes</a></h1>
+
+<footer class="post-info">Posted on <span class="post-meta"><time datetime="2016.08.25">2016.08.25</time>
+
+    &middot; Tagged in
+        
+        <a href="http://beyondblog.github.io/tags/kubernetes">kubernetes</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/docker">docker</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/k8s">k8s</a>
+        
+    
+
+</span>
+</footer>
+
+    <p>因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。</p>
+
+<ul>
+<li>查看rpm 安装脚本   rpm -qp &ndash;scripts</li>
+<li>查看rpm 包文件列表 rpm -qpR</li>
+<li>按照yumdownloader 工具  yum -y install yum-utils &amp;  yumdownloader &ndash;enablerepo=epel</li>
+<li>从 yum 源下载 rpm 包 yumdownloader kubernetes-node</li>
+<li>提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv</li>
+</ul>
+&hellip;</p>
+    <a href="http://beyondblog.github.io/post/manual_install_kubernetes/" title="Centos 手动安装 Kubernetes">Read more &raquo;</a>
+</article>
+
+        
+            <article class="post">
+    
+<h1><a href="http://beyondblog.github.io/post/dotnet_core_for_docker/" title=".NET core for docker">.NET core for docker</a></h1>
+
+<footer class="post-info">Posted on <span class="post-meta"><time datetime="2016.08.01">2016.08.01</time>
+
+    &middot; Tagged in
+        
+        <a href="http://beyondblog.github.io/tags/.net">.net</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/docker">docker</a>
+        
+    
+
+</span>
+</footer>
+
+    <p>本文描述下 .net core 在 docker 里面的玩法</p>
+
+<p>首先按照<a href="https://www.microsoft.com/net/core#docker">官方文档</a>先 拉取镜像</p>
+
+<pre><code> docker pull microsoft/dotnet:latest
+</code></pre>
+
+<p>然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project</p>
+
+<pre><code>dotnet new -t web
+</code></pre>
+
+<p>如果本地没有 dotnew 运行时可以docker run 一个</p>
+
+<pre><code>docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+</code></pre>
+&hellip;</p>
+    <a href="http://beyondblog.github.io/post/dotnet_core_for_docker/" title=".NET core for docker">Read more &raquo;</a>
+</article>
+
+        
+            <article class="post">
+    
+<h1><a href="http://beyondblog.github.io/post/gitlab_bot_ci/" title="使用gitlab 进行持续集成">使用gitlab 进行持续集成</a></h1>
+
+<footer class="post-info">Posted on <span class="post-meta"><time datetime="2016.06.25">2016.06.25</time>
+
+    &middot; Tagged in
+        
+        <a href="http://beyondblog.github.io/tags/gitlab">gitlab</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/ci">ci</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/docker">docker</a>
+        
+    
+
+</span>
+</footer>
+
+    <p>Gitlab Community Edition 有一套比较完善的<a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md">自动构建系统</a> 以及非常多的<a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md">hooks</a>(<a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md">还有这个</a>) 加上<a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md">trigger</a> 机制可以灵活的控制build任务</p>
+
+<p>那么利用这些个接口我们可以弄一个简单的自动构建机器人来提高团队之间的开发效率</p>
+
+<p>首先进入项目的Settting页面</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/74311666jw1f1q9twodw5j20j60h8acf.jpg" alt="add web hooks" /></p>
+
+<p>这儿订阅 push 事件 comments事件 和 merge Request 事件。 如果有需要还可以开启https支持 然后填写一个url(这个就是自己实现的一个bot) 点击添加就好</p>
+
+<p>然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）&hellip;</p>
+    <a href="http://beyondblog.github.io/post/gitlab_bot_ci/" title="使用gitlab 进行持续集成">Read more &raquo;</a>
+</article>
+
+        
+            <article class="post">
+    
+<h1><a href="http://beyondblog.github.io/post/k8s/" title="kubernetes v1.0 指南">kubernetes v1.0 指南</a></h1>
+
+<footer class="post-info">Posted on <span class="post-meta"><time datetime="2015.09.15">2015.09.15</time>
+
+    &middot; Tagged in
+        
+        <a href="http://beyondblog.github.io/tags/kubernetes">kubernetes</a>, 
+        
+        <a href="http://beyondblog.github.io/tags/docker">docker</a>
+        
+    
+
+</span>
+</footer>
+
+    <p>操作系统：</p>
+
+<p>CentOS7</p>
+
+<pre><code>$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+</code></pre>
+
+<p>Docker 版本</p>
+
+<pre><code>$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+</code></pre>
+
+<p>kubernetes 版本</p>
+
+<pre><code>$ kubectl version
+Client Version: version.Info{Major:&quot;1&quot;, Minor:&quot;0&quot;, GitVersion:&quot;v1.0.4&quot;, GitCommit:&quot;65d28d5fd12345592405714c81cd03b9c41d41d9&quot;, GitTreeState:&quot;clean&quot;}
+Server Version: version.Info{Major:&quot;1&quot;, Minor:&quot;0&quot;, GitVersion:&quot;v1.0.4&quot;, GitCommit:&quot;65d28d5fd12345592405714c81cd03b9c41d41d9&quot;, GitTreeState:&quot;clean&quot;}
+</code></pre>
+&hellip;</p>
+    <a href="http://beyondblog.github.io/post/k8s/" title="kubernetes v1.0 指南">Read more &raquo;</a>
+</article>
+
+        
+        <div class="pagination">
+<nav>
+
+	<p class="counter">Page 1 of 1</p>
+
+
+</nav>
+</div>
+
+    </main>
+
+    <aside class="author">
+  <img class="profile-image" src="http://beyondblog.github.io/img/profile.png" alt="beyondblog" />
+  <p class="name">by 
+  <strong>beyondblog</strong></p>
+  <p class="address">BeiJing</p>
+  <p class="link"></p>
+  <ul class="social">
+    
+<li><a href="//twitter.com/beyondblog" class="icon-twitter" target="_blank" title="Twitter"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//github.com/beyondblog" class="icon-github" target="_blank" title="Github"></a></li>
+
+
+
+
+<li><a href="http://beyondblog.github.io/post/index.xml" class="icon-rss" target="_blank" title="RSS"></a></li>
+
+  </ul>
+  <br><br>
+</aside>
+
+</div>
+<footer class="main-footer">
+  <div class="container clearfix">
+        <a class="icon-rss" href="http://beyondblog.github.io/post/index.xml" title="RSS"></a>
+        <p>&copy; 2016 &middot; beyondblog</p>
+  </div>
+</footer>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>window.jQuery || document.write('<script src="http:\/\/beyondblog.github.io\/js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
+<script src="http://beyondblog.github.io/js/plugins.js"></script>
+
+</body>
+</html>
+

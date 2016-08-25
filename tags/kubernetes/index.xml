@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kubernetes on Beyondblog</title>
+    <link>http://beyondblog.github.io/tags/kubernetes/</link>
+    <description>Recent content in Kubernetes on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <atom:link href="http://beyondblog.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>http://beyondblog.github.io/post/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;
+&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;
+&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;
+&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
+&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:&lt;/p&gt;
+
+&lt;p&gt;添加一个 kube 组用户&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;getent group kube &amp;gt;/dev/null || groupadd -r kube
+getent passwd kube &amp;gt;/dev/null || useradd -r -g kube -d -s /sbin/nologin -c &amp;quot;Kubernetes user&amp;quot; kube
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制配置文件到 /etc/kubernetes/目录下&lt;/p&gt;
+
+&lt;p&gt;建立kubelet 目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /var/lib/kubelet 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;建立 /var/run/kubernetes 目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /var/run/kubernetes
+chown  -R kube:kube /var/run/kubernetes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制二进制文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; cp hyperkube /usr/bin/
+ cp kubelet kube-proxy /usr/bin/
+ 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制 kubelet.service  kube-proxy.service 文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp kubelet.service kube-proxy.service /usr/lib/systemd/system/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;重新 reload 下服务单元&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;systemctl daemon-reload
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>kubernetes v1.0 指南</title>
+      <link>http://beyondblog.github.io/post/k8s/</link>
+      <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/k8s/</guid>
+      <description>
+
+&lt;p&gt;操作系统：&lt;/p&gt;
+
+&lt;p&gt;CentOS7&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Docker 版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;kubernetes 版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ kubectl version
+Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;###软件依赖&lt;/p&gt;
+
+&lt;p&gt;master 主机&lt;/p&gt;
+
+&lt;p&gt;etcd&lt;/p&gt;
+
+&lt;p&gt;kube-apiserver&lt;/p&gt;
+
+&lt;p&gt;kube-controller-manager&lt;/p&gt;
+
+&lt;p&gt;kube-scheduler&lt;/p&gt;
+
+&lt;p&gt;flanneld （docker 集群网络管理 可选）&lt;/p&gt;
+
+&lt;p&gt;minion 主机&lt;/p&gt;
+
+&lt;p&gt;kube-proxy&lt;/p&gt;
+
+&lt;p&gt;kubelet&lt;/p&gt;
+
+&lt;p&gt;flanneld&lt;/p&gt;
+
+&lt;p&gt;docker&lt;/p&gt;
+
+&lt;h3 id=&#34;安装指南&#34;&gt;安装指南&lt;/h3&gt;
+
+&lt;p&gt;本文只介绍 CentOS7的安装方式，其他平台安装请移步 &lt;a href=&#34;http://kubernetes.io/v1.0/gs-custom.html&#34;&gt;这里&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;kubernetes 可以运行在一台机器上也可以运行在多台机器上，本文有两台物理机器 ip 分别是 172.16.0.17（master） 和 172.16.0.18（minion）&lt;/p&gt;
+
+&lt;p&gt;master 机器为主服务用来调度 各个minion 机器，最终应用程序容器将运行在 minion 的 Docker 容器中，当然可以在 master 机器上安装 docker 同时让其成为 minion node 机器提供服务。&lt;/p&gt;
+
+&lt;p&gt;下面开始具体操作，注意两台机器上都需要操作这些&lt;/p&gt;
+
+&lt;p&gt;首先先修改下系统 hosts&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ vi /etc/hosts
+172.16.0.17   master
+172.16.0.18   minion
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;添加一个软件源&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ vi /etc/yum.repos.d/virt7-testing.repo
+[virt7-testing]
+name=virt7-testing
+baseurl=http://cbs.centos.org/repos/virt7-testing/x86_64/os/
+gpgcheck=0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过 yum 方式安装&lt;/p&gt;
+
+&lt;p&gt;yum -y install &amp;ndash;enablerepo=virt7-testing kubernetes&lt;/p&gt;
+
+&lt;p&gt;再装个 etcd 官方文档推荐的是0.4.6这个最新的版本没有试过，这个 etcd 就是做服务发现的类zookeeper，也是 Go 语言写的&lt;/p&gt;
+
+&lt;p&gt;yum install &lt;a href=&#34;http://cbs.centos.org/kojifiles/packages/etcd/0.4.6/7.el7.centos/x86_64/etcd-0.4.6-7.el7.centos.x86_64.rpm&#34;&gt;http://cbs.centos.org/kojifiles/packages/etcd/0.4.6/7.el7.centos/x86_64/etcd-0.4.6-7.el7.centos.x86_64.rpm&lt;/a&gt;
+yum -y install &amp;ndash;enablerepo=virt7-testing kubernetes&lt;/p&gt;
+
+&lt;p&gt;然后在/etc/kubernetes/目录下就能看到配置文件啦，这个时候建议用官方最新的二进制包替换下 yum 源安装的二进制文件,因为 yum 源可能不是最新的可以在 github 上下载最新的&lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases/latest&#34;&gt;点击这里&lt;/a&gt;或者&lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases&#34;&gt;release版列表&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;然后解压里面的kubernetes/server/kubernetes-server-linux-amd64.tar.gz 把二进制文件替换到/usr/bin 下就好&lt;/p&gt;
+
+&lt;p&gt;通过 yum 方式安装后会在/etc/kubernetes目下生成配置文件，在/usr/lib/systemd/system 目录下生成 systemctl 的 Unit 文件 （类似服务配置文件）&lt;/p&gt;
+
+&lt;p&gt;然后开始修改/etc/kubernetes/下的配置文件了&lt;/p&gt;
+
+&lt;p&gt;先生成一个 key&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;openssl genrsa -out /tmp/serviceaccount.key 2048
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;===&lt;/p&gt;
+
+&lt;p&gt;/etc/kubernetes/apiserver&lt;/p&gt;
+
+&lt;p&gt;注意: 这里的master 与 minion机器的apiserver 配置的区别在 KUBE_API_PORT=&amp;ldquo;&amp;ndash;port=8080&amp;rdquo;
+minion 注释掉就好,仅 master 监听&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+
+# The address on the local server to listen to.
+KUBE_API_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
+
+# The port on the local server to listen on.
+KUBE_API_PORT=&amp;quot;--port=8080&amp;quot;
+
+# Port minions listen on
+# KUBELET_PORT=&amp;quot;--kubelet_port=10250&amp;quot;
+
+# Comma separated list of nodes in the etcd cluster 注意：etcd 这儿使用4001端口,请确保 master 机器的 etcd 监听的是此端口
+KUBE_ETCD_SERVERS=&amp;quot;--etcd_servers=http://master:4001&amp;quot;
+
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES=&amp;quot;--service-cluster-ip-range=10.254.0.0/16&amp;quot;
+
+KUBE_MASTER=&amp;quot;--master=http://master:8080&amp;quot;
+
+# default admission control policies
+KUBE_ADMISSION_CONTROL=&amp;quot;--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota&amp;quot;
+
+# Add your own! (这儿就是刚刚生成的 key)
+KUBE_API_ARGS=&amp;quot;--service_account_key_file=/tmp/serviceaccount.key&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;===
+蓝后是
+/etc/kubernetes/config
+这块 master 与 minion 都一样&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes system config
+#
+# The following values are used to configure various aspects of all
+# kubernetes services, including
+#
+#   kube-apiserver.service
+#   kube-controller-manager.service
+#   kube-scheduler.service
+#   kubelet.service
+#   kube-proxy.service
+# logging to stderr means we get it in the systemd journal
+KUBE_LOGTOSTDERR=&amp;quot;--logtostderr=true&amp;quot;
+
+# journal message level, 0 is debug
+KUBE_LOG_LEVEL=&amp;quot;--v=0&amp;quot;
+
+# Should this cluster be allowed to run privileged docker containers
+KUBE_ALLOW_PRIV=&amp;quot;--allow_privileged=false&amp;quot;
+
+# How the controller-manager, scheduler, and proxy find the apiserver
+KUBE_MASTER=&amp;quot;--master=http://master:8080&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;===&lt;/p&gt;
+
+&lt;p&gt;接着
+/etc/kubernetes/controller-manager&lt;/p&gt;
+
+&lt;p&gt;master 机器改就行了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# The following values are used to configure the kubernetes controller-manager
+
+# defaults from config and apiserver should be adequate
+
+# Add your own!
+KUBE_CONTROLLER_MANAGER_ARGS=&amp;quot;--node-monitor-grace-period=10s --pod-eviction-timeout=10s --service_account_private_key_file=/tmp/serviceaccount.key&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接着
+/etc/kubernetes/kubelet&lt;/p&gt;
+
+&lt;p&gt;master&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or &amp;quot;&amp;quot; for all interfaces)
+KUBELET_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
+
+# The port for the info server to serve on
+# KUBELET_PORT=&amp;quot;--port=10250&amp;quot;
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME=&amp;quot;--hostname_override=master&amp;quot;
+
+# location of the api-server
+KUBELET_API_SERVER=&amp;quot;--api_servers=http://master:8080&amp;quot;
+
+# Add your own!
+KUBELET_ARGS=&amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;minion&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or &amp;quot;&amp;quot; for all interfaces)
+KUBELET_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
+
+# The port for the info server to serve on
+# KUBELET_PORT=&amp;quot;--port=10250&amp;quot;
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME=&amp;quot;--hostname_override=minion&amp;quot;
+
+# location of the api-server
+KUBELET_API_SERVER=&amp;quot;--api_servers=http://master:8080&amp;quot;
+
+# Add your own!
+KUBELET_ARGS=&amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里面的KUBELET_HOSTNAME 就是后面的 node 的名称，注意这个名称似乎要在 hosts 文件种定义好&lt;/p&gt;
+
+&lt;p&gt;===
+就这么多其他的不用改，然后依次启动服务即可&lt;/p&gt;
+
+&lt;p&gt;master 机器上启动&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES
+done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;systemctl 是 centos7 的一个新增的玩意儿
+它实际上将 service 和 chkconfig 这两个命令组合到一起&lt;/p&gt;
+
+&lt;p&gt;systemctl restart  重启某个服务
+systemctl enable 将某个服务设未开机自动运行
+systemctl status 查看某个服务运行状态 (如果启动失败这儿能看到一些错误日志)&lt;/p&gt;
+
+&lt;p&gt;ps: systemctl 服务的单元文件在 /usr/lib/systemd/system 依赖文件在/etc/systemd/system&lt;/p&gt;
+
+&lt;p&gt;通过 yum 方式安装完kubernetes 之后默认已经创建好了这些服务直接启动就好 : )&lt;/p&gt;
+
+&lt;p&gt;一定要按照顺序启动,因为kubernetes 依赖 etcd 所以 etcd 得先起来,建议一个一个手动启动方便定位错误&lt;/p&gt;
+
+&lt;p&gt;起来之后就能用 kubectl了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@ip-172-16-0-17 home]# kubectl version
+Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后在启动节点机器,可以在 master 机器和minion 机器都启用这样的话 master 同时承担折 minion 的任务&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;for SERVICES in kube-proxy kubelet docker; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES
+done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此时在 master 机器上用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@ip-172-16-0-17 home]# kubectl get nodes
+NAME      LABELS                          STATUS
+master    kubernetes.io/hostname=master   Ready
+minion    kubernetes.io/hostname=minion   Ready
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其他机器用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;kubectl -s http://master:8080
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;指定 master主机就行&lt;/p&gt;
+
+&lt;p&gt;此时kubernetes 就搭建完毕了，可以用官方的 example pods 测试下 容器是否正常运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; kubectl create -f docs/user-guide/walkthrough/pod-nginx-with-label.yaml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个 docs 就是之前下载的kubernetes.tar.gz&lt;/p&gt;
+
+&lt;p&gt;这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

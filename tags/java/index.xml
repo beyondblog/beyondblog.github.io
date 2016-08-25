@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Java on Beyondblog</title>
+    <link>http://beyondblog.github.io/tags/java/</link>
+    <description>Recent content in Java on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 27 Jul 2016 08:07:10 +0800</lastBuildDate>
+    <atom:link href="http://beyondblog.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>分析 heap dump 文件</title>
+      <link>http://beyondblog.github.io/post/java_analysis_heap_dump/</link>
+      <pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/java_analysis_heap_dump/</guid>
+      <description>
+
+&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
+
+&lt;h3 id=&#34;获取-thread-dump-文件&#34;&gt;获取 thread dump 文件&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;jstack &amp;lt;pid&amp;gt; &amp;gt; file.tdump
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;关于thread dump 的信息可以&lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;查看这里&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;heap dump 是 jvm 针对某一时刻生成的一份『快照』按照特定的格式保存到磁盘上，文件包含了很多信息例如 对象信息(包括对象的实例个数、各种字段的值) 、类信息、线程调用栈等等&lt;/p&gt;
+
+&lt;h3 id=&#34;手动获取-heap-dump-文件&#34;&gt;手动获取 heap dump 文件&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;jmap -dump:format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;自动获取-heap-dump-文件&#34;&gt;自动获取 heap dump 文件&lt;/h4&gt;
+
+&lt;p&gt;以Oracle JVM为例,在应用启动时配置相关的参数 -XX:+HeapDumpOnOutOfMemoryError，当应用抛出OutOfMemoryError时生成dump文件。-XX:HeapDumpPath 指定 dump 文件路径&lt;/p&gt;
+
+&lt;p&gt;这种方式获取的文件一般比较大几百兆吧,可以使用-dump:live选项只抓取当前存活的内存对象这样生成的 dump 文件会小一些&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;jmap -dump:live,format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;dump 文件就可以用一些工具查看例如 jhat visual vm mat&lt;/p&gt;
+
+&lt;p&gt;如下所示&lt;/p&gt;
+
+&lt;p&gt;MAT&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/ha456.png&#34; alt=&#34;ha456&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Visual VM&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/visual vm.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如图所示可以看出 heap dump 还保存了 Thread dump、以及系统的环境变量&lt;/p&gt;
+
+&lt;p&gt;===
+下面以通过这个heap dump文件来找出redis 连接池泄露的问题举例&lt;/p&gt;
+
+&lt;p&gt;首先进入 classes 查看系统的所有类信息
+&lt;img src=&#34;http://beyondblog.github.io/img/class.png&#34; alt=&#34;image&#34; /&gt;
+可以看出每个类所占有的实例个数,大小,百分比&lt;/p&gt;
+
+&lt;p&gt;既然是找 redis 链接泄露则先找出 redis 的类信息,可以通过搜索 redis 关键字找到,也可以用OQL Console 输入查询语言快速搜索&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;select x from redis.clients.jedis.Jedis x
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/oql.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/redis.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/redis pool.png&#34; alt=&#34;image&#34; /&gt;
+可以看到 jedis client 实例 占用了110个,而连接池配置的是100个肯定有某处代码没有回收&lt;/p&gt;
+
+&lt;p&gt;随便找一个 client 查看 流里面的信息看看当前执行的什么业务从而定位出问题&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/output.png&#34; alt=&#34;image&#34; /&gt;
+&lt;img src=&#34;http://beyondblog.github.io/img/data.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;把这个二进制文件保存文件就可以看到个大概&lt;/p&gt;
+
+&lt;p&gt;最后问题定位到代码在有一处使用 redis 获取链接操作之后没有进行 close 导致的&lt;/p&gt;
+
+&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;
+
+&lt;p&gt;[0] &lt;a href=&#34;http://my.oschina.net/feichexia/blog/196575&#34;&gt;http://my.oschina.net/feichexia/blog/196575&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[1] &lt;a href=&#34;https://www.ibm.com/developerworks/cn/websphere/library/techarticles/0903_suipf_javadump/&#34;&gt;https://www.ibm.com/developerworks/cn/websphere/library/techarticles/0903_suipf_javadump/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[2] &lt;a href=&#34;https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html&#34;&gt;https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[3] &lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;http://jameswxx.iteye.com/blog/1041173&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on Beyondblog</title>
+    <link>http://beyondblog.github.io/tags/docker/</link>
+    <description>Recent content in Docker on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <atom:link href="http://beyondblog.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>http://beyondblog.github.io/post/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;
+&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;
+&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;
+&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
+&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:&lt;/p&gt;
+
+&lt;p&gt;添加一个 kube 组用户&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;getent group kube &amp;gt;/dev/null || groupadd -r kube
+getent passwd kube &amp;gt;/dev/null || useradd -r -g kube -d -s /sbin/nologin -c &amp;quot;Kubernetes user&amp;quot; kube
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制配置文件到 /etc/kubernetes/目录下&lt;/p&gt;
+
+&lt;p&gt;建立kubelet 目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /var/lib/kubelet 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;建立 /var/run/kubernetes 目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /var/run/kubernetes
+chown  -R kube:kube /var/run/kubernetes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制二进制文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; cp hyperkube /usr/bin/
+ cp kubelet kube-proxy /usr/bin/
+ 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制 kubelet.service  kube-proxy.service 文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp kubelet.service kube-proxy.service /usr/lib/systemd/system/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;重新 reload 下服务单元&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;systemctl daemon-reload
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>.NET core for docker</title>
+      <link>http://beyondblog.github.io/post/dotnet_core_for_docker/</link>
+      <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/dotnet_core_for_docker/</guid>
+      <description>
+
+&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
+
+&lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; docker pull microsoft/dotnet:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet new -t web
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果本地没有 dotnew 运行时可以docker run 一个&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面这个命令的意思是 让 docker 运行(&lt;code&gt;docker run&lt;/code&gt;)一个dotnet:latest的镜像(&lt;code&gt;microsoft/dotnet:latest&lt;/code&gt;) 并且把本地的/home/hello_dotnet卷路径挂载到容器的/home/hello_dotnet 下面(&lt;code&gt;-v /home/hello_dotnet/:/home/hello_dotnet/&lt;/code&gt;)然后提供交互式模式能够输入输出(&lt;code&gt;-it&lt;/code&gt;)退出之后自动删除容器(&lt;code&gt;--rm&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;然后进入容器生成类似这样&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 home]# docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+root@193fb1cf32a6:/# cd /home/hello_dotnet/
+root@193fb1cf32a6:/home/hello_dotnet# dotnet new -t web
+Created new C# project in /home/hello_dotnet.
+root@193fb1cf32a6:/home/hello_dotnet# ls
+Controllers  Data  Models  Program.cs  README.md  Services  Startup.cs  Views  appsettings.json  bower.json  gulpfile.js  package.json  project.json  web.config  wwwroot
+root@193fb1cf32a6:/home/hello_dotnet#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后更新下包依赖&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet restore
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;直接运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet run
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;修改一下默认的监听端口 默认是 localhost:5000 不好做代理修改成 0.0.0.0
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+
+namespace WebApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseUrls(&amp;quot;http://0.0.0.0:5000&amp;quot;) //添加这一行
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup&amp;lt;Startup&amp;gt;()
+                .Build();
+
+            host.Run();
+        }
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ok 没啥问题 publish 一下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@193fb1cf32a6:/home/hello_dotnet# dotnet publish
+Publishing hello_dotnet for .NETCoreApp,Version=v1.0
+No executable found matching command &amp;quot;npm&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;额,并不能够 publish 提示找不到 npm, npm 这个不是 node 的包依赖工具么。。
+经过查看发现这个生成的 web 依赖了 gulp 所以很蛋疼 默认的容器只有运行时环境(可能主要是为了精简镜像)需要自己在安装 node&lt;/p&gt;
+
+&lt;p&gt;这里可以在容器里面把 node 装好或者去其他机器上 publish&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get update &amp;amp; apt-get install npm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;并且安装完 npm 还不够 还需要 安装 bower gulp&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;No executable found matching command &amp;quot;bower&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;No executable found matching command &amp;quot;gulp&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;npm install bower -g
+
+npm install gulp -g
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ok 结束了&amp;hellip;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Project hello_dotnet (.NETCoreApp,Version=v1.0) was previously compiled. Skipping compilation.
+Configuring the following project for use with IIS: &#39;/home/hello_dotnet/bin/Debug/netcoreapp1.0/publish&#39;
+Updating web.config at &#39;/home/hello_dotnet/bin/Debug/netcoreapp1.0/publish/web.config&#39;
+Configuring project completed successfully
+publish: Published to /home/hello_dotnet/bin/Debug/netcoreapp1.0/publish
+Published 1/1 projects successfully
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;退出容器回到服务器上&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@193fb1cf32a6:/home/hello_dotnet/bin/Debug/netcoreapp1.0# exit
+exit
+[root@172-16-0-20 home]# ls
+data  docker-compose  hello_dotnet  java  xiaoming  xiaoqiu
+[root@172-16-0-20 home]# cd hello_dotnet/
+[root@172-16-0-20 hello_dotnet]# ls
+appsettings.json  bin  bower.json  Controllers  Data  gulpfile.js  Models  node_modules  obj  package.json  Program.cs  project.json  project.lock.json  README.md  Services  Startup.cs  Views  web.config  wwwroot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;代码都已经创建好了,现在只要找个运行时 dotnet hello_dotnet.dll 就可以启动 web 了&lt;/p&gt;
+
+&lt;p&gt;打包一个镜像 写个 dockerfile 就好&lt;/p&gt;
+
+&lt;p&gt;先新建个工作目录整理下结构&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 dotnet]# tree -L 2
+.
+├── Dockerfile
+└── hello_dotnet
+    ├── appsettings.json
+    ├── bin
+    ├── bower.json
+    ├── Controllers
+    ├── Data
+    ├── gulpfile.js
+    ├── Models
+    ├── node_modules
+    ├── obj
+    ├── package.json
+    ├── Program.cs
+    ├── project.json
+    ├── project.lock.json
+    ├── README.md
+    ├── Services
+    ├── Startup.cs
+    ├── Views
+    ├── web.config
+    └── wwwroot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 dotnet]# docker build -t &amp;quot;hello_dotnet:1.0&amp;quot; ./
+
+[root@172-16-0-20 dotnet]# docker build -t &amp;quot;hello_dotnet:1.0&amp;quot; ./
+Sending build context to Docker daemon 53.04 MB
+Step 1 : FROM microsoft/dotnet:latest
+ ---&amp;gt; 4028809f66a4
+Step 2 : COPY hello_dotnet /home/www
+ ---&amp;gt; 600558b4e65d
+Removing intermediate container 0c05fc314674
+Step 3 : WORKDIR /home/www
+ ---&amp;gt; Running in b5b029517595
+ ---&amp;gt; c9f05e277de9
+Removing intermediate container b5b029517595
+Step 4 : EXPOSE 8080
+ ---&amp;gt; Running in 2a00bea9393c
+ ---&amp;gt; b921fe0482f0
+Removing intermediate container 2a00bea9393c
+Step 5 : CMD dotnet hello_dotnet.dll
+ ---&amp;gt; Running in f770b366be81
+ ---&amp;gt; 11027359f344
+Removing intermediate container f770b366be81
+Successfully built 11027359f344
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-16-0-20 dotnet]# docker run  --rm -it -p 8888:5000 hello_dotnet:1.0
+info: Microsoft.Extensions.DependencyInjection.DataProtectionServices[0]
+      User profile is available. Using &#39;/root/.aspnet/DataProtection-Keys&#39; as key repository; keys will not be encrypted at rest.
+Hosting environment: Production
+Content root path: /home/www
+Now listening on: http://0.0.0.0:5000
+Application started. Press Ctrl+C to shut down.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;浏览器访问 &lt;a href=&#34;http://172.16.0.20:8888&#34;&gt;http://172.16.0.20:8888&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ok 一切正常
+&lt;img src=&#34;http://beyondblog.github.io/img/web.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;当然也可以用守护进程的模式运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run  -d  -p 8888:5000 hello_dotnet:1.0 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;参考文档&#34;&gt;参考文档&lt;/h3&gt;
+
+&lt;p&gt;[0] &lt;a href=&#34;https://dotnet.github.io&#34;&gt;https://dotnet.github.io&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[1] &lt;a href=&#34;https://docs.docker.com/engine/reference/builder&#34;&gt;https://docs.docker.com/engine/reference/builder&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用gitlab 进行持续集成</title>
+      <link>http://beyondblog.github.io/post/gitlab_bot_ci/</link>
+      <pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/gitlab_bot_ci/</guid>
+      <description>
+
+&lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;
+
+&lt;p&gt;那么利用这些个接口我们可以弄一个简单的自动构建机器人来提高团队之间的开发效率&lt;/p&gt;
+
+&lt;p&gt;首先进入项目的Settting页面&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://ww1.sinaimg.cn/large/74311666jw1f1q9twodw5j20j60h8acf.jpg&#34; alt=&#34;add web hooks&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这儿订阅 push 事件 comments事件 和 merge Request 事件。 如果有需要还可以开启https支持 然后填写一个url(这个就是自己实现的一个bot) 点击添加就好&lt;/p&gt;
+
+&lt;p&gt;然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://ww1.sinaimg.cn/large/74311666jw1f1q9z5b8z0j21kw0j40vl.jpg&#34; alt=&#34;private token&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;最后进入项目的 Settings &amp;gt; Triggers页面 单击 Add trigger 按钮创建一个新的trigger token
+这个token可以通过api来触发你的build任务从而实现自动化&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://ww4.sinaimg.cn/large/74311666jw1f1qa39zq28j20u1094754.jpg&#34; alt=&#34;trigger&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这几个条件满足之后就可以开始开发机器人了,这儿我就用nodejs 写一个最简单的实现&lt;/p&gt;
+
+&lt;p&gt;我们可能想在开发发起merge request 合并到主分支的时候 只要review者通过且单元测试顺利则自动去部署（这儿可以是内部的测试环境, 生产环境则不建议）&lt;/p&gt;
+
+&lt;p&gt;那我们设计的机器人就这样,监听merge request 只要有人发起则回复一个消息询问是否要自动部署。当下次merge后则判断之前是否有需要自动部署的评论 如果有则用trigger 触发depoly的构建 : )&lt;/p&gt;
+
+&lt;p&gt;大致的代码如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;app.use(&#39;/trigger-ci&#39;, function(req, res, next) {
+    var object_kind = req.body.object_kind;
+    var object_attributes = req.body.object_attributes;
+
+    if (object_kind == &#39;note&#39;) {
+
+        if (object_attributes.noteable_type == &#39;MergeRequest&#39;) {
+            if (object_attributes.note == &#39;大海&#39;) {
+                console.log(object_attributes);
+                MergeRequestNote(object_attributes.project_id,
+                    req.body.merge_request.id,
+                    &#39;我们的征途是星辰大海&#39;);
+            } else if (object_attributes.note.trim() == &#39;看美女&#39;) {
+                GetWomenPhoto(function(url) {
+                    MergeRequestNote(object_attributes.project_id,
+                        req.body.merge_request.id,
+                        &#39;![美女](&#39; + url + &#39;)&#39;);
+                });
+            } else if (object_attributes.note.trim() == &#39;讲笑话&#39;) {
+                GetJoke(function(joke) {
+                    MergeRequestNote(object_attributes.project_id,
+                        req.body.merge_request.id,
+                        joke.title + &#39;\r\n\r\n&#39; + joke.text);
+                });
+            } else if (object_attributes.note.trim() == &#39;合并后部署&#39;) {
+                MergeRequestNote(object_attributes.project_id,
+                    req.body.merge_request.id,
+                    &#39;好的! 当这个分支成功合并后 我会触发部署服务! \r\n ![fax_nick](http://ww1.sinaimg.cn/large/74311666jw1f1qaa18su7j20dw08zgmb.jpg)&#39;);
+            }
+        }
+    } else if (object_kind == &#39;merge_request&#39;) {
+
+        if (object_attributes.action == &#39;open&#39; || object_attributes.action == &#39;reopen&#39;) {
+
+            MergeRequestNote(object_attributes.target_project_id,
+                object_attributes.id,
+                &#39;您好! 尼克狐为您服务! 合并请求通过后需要我做些什么吗? 例如: 合并后部署 讲笑话 看美女 ? \r\n ![DC_W_LVGKY6H7RYX8F__WWI](http://ww1.sinaimg.cn/large/74311666jw1f1qa9kmjmcj206h08cdg2.jpg)&#39;);
+        } else if (object_attributes.action == &#39;merge&#39;) {
+            //遍历commit
+            GetMergeNotes(object_attributes.target_project_id,
+                object_attributes.id, function(err, notes) {
+                    for (index in notes) {
+                        if (notes[index].body.trim() == &#39;合并后部署&#39;) {
+                            GetCiID(object_attributes.target_project_id, function(err, ci) {
+                                InvokeTrigger(ci, object_attributes.target_branch, function(err, ciResult) {
+                                    MergeRequestNote(object_attributes.target_project_id,
+                                        object_attributes.id, &#39;我已成功触发自动构建 [View build details](&#39; + object_attributes.target.web_url + &#39;/commit/&#39; + JSON.parse(ciResult).commit.sha + &#39;/builds)&#39;);
+                                });
+                            });
+                            break;
+                        }
+                    }
+                });
+        }
+    }
+    res.send(&amp;quot;ok&amp;quot;);
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面的代码实现了监听了合并请求和评论的事件,然后会对一些命令做出响应(这儿特意加了看美女和讲笑话的实现可以自动去随机获取哟~ 编码道路上不在枯燥!!!)&lt;/p&gt;
+
+&lt;p&gt;PS: 我们的项目使用git的build做自动构建并且生成docker镜像push到仓库,然后会回掉k8s服务去做自动更新部署详情请看源码&lt;/p&gt;
+
+&lt;p&gt;上图看效果&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xrn7f.com1.z0.glb.clouddn.com/16-3-9/2889275.jpg&#34; alt=&#34;merge request&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://ww4.sinaimg.cn/large/74311666jw1f1qajp0423j218e14646a.jpg&#34; alt=&#34;merge depoly&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://ww3.sinaimg.cn/large/74311666jw1f1qakbuwrrj2186134aep.jpg&#34; alt=&#34;women&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://ww4.sinaimg.cn/large/74311666jw1f1qakrfbf2j218m08ojsk.jpg&#34; alt=&#34;merge&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xrn7f.com1.z0.glb.clouddn.com/16-3-9/41236685.jpg&#34; alt=&#34;build success&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;参考内容&#34;&gt;参考内容&lt;/h3&gt;
+
+&lt;p&gt;[0] &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[1] &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[2] &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[3] &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[4] &lt;a href=&#34;https://github.com/gitlabhq/gitlabhq/tree/master/doc/api&#34;&gt;https://github.com/gitlabhq/gitlabhq/tree/master/doc/api&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>kubernetes v1.0 指南</title>
+      <link>http://beyondblog.github.io/post/k8s/</link>
+      <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/k8s/</guid>
+      <description>
+
+&lt;p&gt;操作系统：&lt;/p&gt;
+
+&lt;p&gt;CentOS7&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Docker 版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;kubernetes 版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ kubectl version
+Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;###软件依赖&lt;/p&gt;
+
+&lt;p&gt;master 主机&lt;/p&gt;
+
+&lt;p&gt;etcd&lt;/p&gt;
+
+&lt;p&gt;kube-apiserver&lt;/p&gt;
+
+&lt;p&gt;kube-controller-manager&lt;/p&gt;
+
+&lt;p&gt;kube-scheduler&lt;/p&gt;
+
+&lt;p&gt;flanneld （docker 集群网络管理 可选）&lt;/p&gt;
+
+&lt;p&gt;minion 主机&lt;/p&gt;
+
+&lt;p&gt;kube-proxy&lt;/p&gt;
+
+&lt;p&gt;kubelet&lt;/p&gt;
+
+&lt;p&gt;flanneld&lt;/p&gt;
+
+&lt;p&gt;docker&lt;/p&gt;
+
+&lt;h3 id=&#34;安装指南&#34;&gt;安装指南&lt;/h3&gt;
+
+&lt;p&gt;本文只介绍 CentOS7的安装方式，其他平台安装请移步 &lt;a href=&#34;http://kubernetes.io/v1.0/gs-custom.html&#34;&gt;这里&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;kubernetes 可以运行在一台机器上也可以运行在多台机器上，本文有两台物理机器 ip 分别是 172.16.0.17（master） 和 172.16.0.18（minion）&lt;/p&gt;
+
+&lt;p&gt;master 机器为主服务用来调度 各个minion 机器，最终应用程序容器将运行在 minion 的 Docker 容器中，当然可以在 master 机器上安装 docker 同时让其成为 minion node 机器提供服务。&lt;/p&gt;
+
+&lt;p&gt;下面开始具体操作，注意两台机器上都需要操作这些&lt;/p&gt;
+
+&lt;p&gt;首先先修改下系统 hosts&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ vi /etc/hosts
+172.16.0.17   master
+172.16.0.18   minion
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;添加一个软件源&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ vi /etc/yum.repos.d/virt7-testing.repo
+[virt7-testing]
+name=virt7-testing
+baseurl=http://cbs.centos.org/repos/virt7-testing/x86_64/os/
+gpgcheck=0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过 yum 方式安装&lt;/p&gt;
+
+&lt;p&gt;yum -y install &amp;ndash;enablerepo=virt7-testing kubernetes&lt;/p&gt;
+
+&lt;p&gt;再装个 etcd 官方文档推荐的是0.4.6这个最新的版本没有试过，这个 etcd 就是做服务发现的类zookeeper，也是 Go 语言写的&lt;/p&gt;
+
+&lt;p&gt;yum install &lt;a href=&#34;http://cbs.centos.org/kojifiles/packages/etcd/0.4.6/7.el7.centos/x86_64/etcd-0.4.6-7.el7.centos.x86_64.rpm&#34;&gt;http://cbs.centos.org/kojifiles/packages/etcd/0.4.6/7.el7.centos/x86_64/etcd-0.4.6-7.el7.centos.x86_64.rpm&lt;/a&gt;
+yum -y install &amp;ndash;enablerepo=virt7-testing kubernetes&lt;/p&gt;
+
+&lt;p&gt;然后在/etc/kubernetes/目录下就能看到配置文件啦，这个时候建议用官方最新的二进制包替换下 yum 源安装的二进制文件,因为 yum 源可能不是最新的可以在 github 上下载最新的&lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases/latest&#34;&gt;点击这里&lt;/a&gt;或者&lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases&#34;&gt;release版列表&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;然后解压里面的kubernetes/server/kubernetes-server-linux-amd64.tar.gz 把二进制文件替换到/usr/bin 下就好&lt;/p&gt;
+
+&lt;p&gt;通过 yum 方式安装后会在/etc/kubernetes目下生成配置文件，在/usr/lib/systemd/system 目录下生成 systemctl 的 Unit 文件 （类似服务配置文件）&lt;/p&gt;
+
+&lt;p&gt;然后开始修改/etc/kubernetes/下的配置文件了&lt;/p&gt;
+
+&lt;p&gt;先生成一个 key&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;openssl genrsa -out /tmp/serviceaccount.key 2048
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;===&lt;/p&gt;
+
+&lt;p&gt;/etc/kubernetes/apiserver&lt;/p&gt;
+
+&lt;p&gt;注意: 这里的master 与 minion机器的apiserver 配置的区别在 KUBE_API_PORT=&amp;ldquo;&amp;ndash;port=8080&amp;rdquo;
+minion 注释掉就好,仅 master 监听&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+
+# The address on the local server to listen to.
+KUBE_API_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
+
+# The port on the local server to listen on.
+KUBE_API_PORT=&amp;quot;--port=8080&amp;quot;
+
+# Port minions listen on
+# KUBELET_PORT=&amp;quot;--kubelet_port=10250&amp;quot;
+
+# Comma separated list of nodes in the etcd cluster 注意：etcd 这儿使用4001端口,请确保 master 机器的 etcd 监听的是此端口
+KUBE_ETCD_SERVERS=&amp;quot;--etcd_servers=http://master:4001&amp;quot;
+
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES=&amp;quot;--service-cluster-ip-range=10.254.0.0/16&amp;quot;
+
+KUBE_MASTER=&amp;quot;--master=http://master:8080&amp;quot;
+
+# default admission control policies
+KUBE_ADMISSION_CONTROL=&amp;quot;--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota&amp;quot;
+
+# Add your own! (这儿就是刚刚生成的 key)
+KUBE_API_ARGS=&amp;quot;--service_account_key_file=/tmp/serviceaccount.key&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;===
+蓝后是
+/etc/kubernetes/config
+这块 master 与 minion 都一样&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes system config
+#
+# The following values are used to configure various aspects of all
+# kubernetes services, including
+#
+#   kube-apiserver.service
+#   kube-controller-manager.service
+#   kube-scheduler.service
+#   kubelet.service
+#   kube-proxy.service
+# logging to stderr means we get it in the systemd journal
+KUBE_LOGTOSTDERR=&amp;quot;--logtostderr=true&amp;quot;
+
+# journal message level, 0 is debug
+KUBE_LOG_LEVEL=&amp;quot;--v=0&amp;quot;
+
+# Should this cluster be allowed to run privileged docker containers
+KUBE_ALLOW_PRIV=&amp;quot;--allow_privileged=false&amp;quot;
+
+# How the controller-manager, scheduler, and proxy find the apiserver
+KUBE_MASTER=&amp;quot;--master=http://master:8080&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;===&lt;/p&gt;
+
+&lt;p&gt;接着
+/etc/kubernetes/controller-manager&lt;/p&gt;
+
+&lt;p&gt;master 机器改就行了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# The following values are used to configure the kubernetes controller-manager
+
+# defaults from config and apiserver should be adequate
+
+# Add your own!
+KUBE_CONTROLLER_MANAGER_ARGS=&amp;quot;--node-monitor-grace-period=10s --pod-eviction-timeout=10s --service_account_private_key_file=/tmp/serviceaccount.key&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接着
+/etc/kubernetes/kubelet&lt;/p&gt;
+
+&lt;p&gt;master&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or &amp;quot;&amp;quot; for all interfaces)
+KUBELET_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
+
+# The port for the info server to serve on
+# KUBELET_PORT=&amp;quot;--port=10250&amp;quot;
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME=&amp;quot;--hostname_override=master&amp;quot;
+
+# location of the api-server
+KUBELET_API_SERVER=&amp;quot;--api_servers=http://master:8080&amp;quot;
+
+# Add your own!
+KUBELET_ARGS=&amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;minion&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or &amp;quot;&amp;quot; for all interfaces)
+KUBELET_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
+
+# The port for the info server to serve on
+# KUBELET_PORT=&amp;quot;--port=10250&amp;quot;
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME=&amp;quot;--hostname_override=minion&amp;quot;
+
+# location of the api-server
+KUBELET_API_SERVER=&amp;quot;--api_servers=http://master:8080&amp;quot;
+
+# Add your own!
+KUBELET_ARGS=&amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里面的KUBELET_HOSTNAME 就是后面的 node 的名称，注意这个名称似乎要在 hosts 文件种定义好&lt;/p&gt;
+
+&lt;p&gt;===
+就这么多其他的不用改，然后依次启动服务即可&lt;/p&gt;
+
+&lt;p&gt;master 机器上启动&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES
+done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;systemctl 是 centos7 的一个新增的玩意儿
+它实际上将 service 和 chkconfig 这两个命令组合到一起&lt;/p&gt;
+
+&lt;p&gt;systemctl restart  重启某个服务
+systemctl enable 将某个服务设未开机自动运行
+systemctl status 查看某个服务运行状态 (如果启动失败这儿能看到一些错误日志)&lt;/p&gt;
+
+&lt;p&gt;ps: systemctl 服务的单元文件在 /usr/lib/systemd/system 依赖文件在/etc/systemd/system&lt;/p&gt;
+
+&lt;p&gt;通过 yum 方式安装完kubernetes 之后默认已经创建好了这些服务直接启动就好 : )&lt;/p&gt;
+
+&lt;p&gt;一定要按照顺序启动,因为kubernetes 依赖 etcd 所以 etcd 得先起来,建议一个一个手动启动方便定位错误&lt;/p&gt;
+
+&lt;p&gt;起来之后就能用 kubectl了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@ip-172-16-0-17 home]# kubectl version
+Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后在启动节点机器,可以在 master 机器和minion 机器都启用这样的话 master 同时承担折 minion 的任务&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;for SERVICES in kube-proxy kubelet docker; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES
+done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此时在 master 机器上用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@ip-172-16-0-17 home]# kubectl get nodes
+NAME      LABELS                          STATUS
+master    kubernetes.io/hostname=master   Ready
+minion    kubernetes.io/hostname=minion   Ready
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其他机器用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;kubectl -s http://master:8080
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;指定 master主机就行&lt;/p&gt;
+
+&lt;p&gt;此时kubernetes 就搭建完毕了，可以用官方的 example pods 测试下 容器是否正常运行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; kubectl create -f docs/user-guide/walkthrough/pod-nginx-with-label.yaml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个 docs 就是之前下载的kubernetes.tar.gz&lt;/p&gt;
+
+&lt;p&gt;这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

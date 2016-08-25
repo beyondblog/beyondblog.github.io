@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>K8s on Beyondblog</title>
+    <link>http://beyondblog.github.io/tags/k8s/</link>
+    <description>Recent content in K8s on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <atom:link href="http://beyondblog.github.io/tags/k8s/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>http://beyondblog.github.io/post/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      
+      <guid>http://beyondblog.github.io/post/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;
+&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;
+&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;
+&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
+&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:&lt;/p&gt;
+
+&lt;p&gt;添加一个 kube 组用户&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;getent group kube &amp;gt;/dev/null || groupadd -r kube
+getent passwd kube &amp;gt;/dev/null || useradd -r -g kube -d -s /sbin/nologin -c &amp;quot;Kubernetes user&amp;quot; kube
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制配置文件到 /etc/kubernetes/目录下&lt;/p&gt;
+
+&lt;p&gt;建立kubelet 目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /var/lib/kubelet 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;建立 /var/run/kubernetes 目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /var/run/kubernetes
+chown  -R kube:kube /var/run/kubernetes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制二进制文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; cp hyperkube /usr/bin/
+ cp kubelet kube-proxy /usr/bin/
+ 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;复制 kubelet.service  kube-proxy.service 文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp kubelet.service kube-proxy.service /usr/lib/systemd/system/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;重新 reload 下服务单元&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;systemctl daemon-reload
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
