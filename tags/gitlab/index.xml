@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Gitlab on Beyondblog</title>
-    <link>aseUrl=http:/beyondblog.github.io/tags/gitlab/</link>
+    <link>http://beyondblog.github.io/tags/gitlab/</link>
     <description>Recent content in Gitlab on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Sat, 25 Jun 2016 09:15:27 +0800</lastBuildDate>
-    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
+    <atom:link href="http://beyondblog.github.io/tags/gitlab/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>使用gitlab 进行持续集成</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/gitlab_bot_ci/</link>
+      <link>http://beyondblog.github.io/post/gitlab_bot_ci/</link>
       <pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/gitlab_bot_ci/</guid>
+      <guid>http://beyondblog.github.io/post/gitlab_bot_ci/</guid>
       <description>
 
 &lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;

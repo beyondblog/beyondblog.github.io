@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Beyondblog</title>
-    <link>aseUrl=http:/beyondblog.github.io/</link>
+    <link>http://beyondblog.github.io/</link>
     <description>Recent content on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
-    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
+    <atom:link href="http://beyondblog.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Centos 手动安装 Kubernetes</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/manual_install_kubernetes/</link>
+      <link>http://beyondblog.github.io/post/manual_install_kubernetes/</link>
       <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/manual_install_kubernetes/</guid>
+      <guid>http://beyondblog.github.io/post/manual_install_kubernetes/</guid>
       <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
 所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;
 
@@ -68,10 +68,10 @@ chown  -R kube:kube /var/run/kubernetes
     
     <item>
       <title>.NET core for docker</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/dotnet_core_for_docker/</link>
+      <link>http://beyondblog.github.io/post/dotnet_core_for_docker/</link>
       <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/dotnet_core_for_docker/</guid>
+      <guid>http://beyondblog.github.io/post/dotnet_core_for_docker/</guid>
       <description>
 
 &lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
@@ -266,7 +266,7 @@ Application started. Press Ctrl+C to shut down.
 &lt;p&gt;浏览器访问 &lt;a href=&#34;http://172.16.0.20:8888&#34;&gt;http://172.16.0.20:8888&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;ok 一切正常
-&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/web.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;http://beyondblog.github.io/img/web.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;当然也可以用守护进程的模式运行&lt;/p&gt;
 
@@ -283,10 +283,10 @@ Application started. Press Ctrl+C to shut down.
     
     <item>
       <title>分析 heap dump 文件</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/java_analysis_heap_dump/</link>
+      <link>http://beyondblog.github.io/post/java_analysis_heap_dump/</link>
       <pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/java_analysis_heap_dump/</guid>
+      <guid>http://beyondblog.github.io/post/java_analysis_heap_dump/</guid>
       <description>
 
 &lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
@@ -320,11 +320,11 @@ Application started. Press Ctrl+C to shut down.
 
 &lt;p&gt;MAT&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/ha456.png&#34; alt=&#34;ha456&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/ha456.png&#34; alt=&#34;ha456&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Visual VM&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/visual vm.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/visual vm.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;如图所示可以看出 heap dump 还保存了 Thread dump、以及系统的环境变量&lt;/p&gt;
 
@@ -332,7 +332,7 @@ Application started. Press Ctrl+C to shut down.
 下面以通过这个heap dump文件来找出redis 连接池泄露的问题举例&lt;/p&gt;
 
 &lt;p&gt;首先进入 classes 查看系统的所有类信息
-&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/class.png&#34; alt=&#34;image&#34; /&gt;
+&lt;img src=&#34;http://beyondblog.github.io/img/class.png&#34; alt=&#34;image&#34; /&gt;
 可以看出每个类所占有的实例个数,大小,百分比&lt;/p&gt;
 
 &lt;p&gt;既然是找 redis 链接泄露则先找出 redis 的类信息,可以通过搜索 redis 关键字找到,也可以用OQL Console 输入查询语言快速搜索&lt;/p&gt;
@@ -340,17 +340,17 @@ Application started. Press Ctrl+C to shut down.
 &lt;pre&gt;&lt;code&gt;select x from redis.clients.jedis.Jedis x
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/oql.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/oql.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/redis.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/redis.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/redis pool.png&#34; alt=&#34;image&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/redis pool.png&#34; alt=&#34;image&#34; /&gt;
 可以看到 jedis client 实例 占用了110个,而连接池配置的是100个肯定有某处代码没有回收&lt;/p&gt;
 
 &lt;p&gt;随便找一个 client 查看 流里面的信息看看当前执行的什么业务从而定位出问题&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/output.png&#34; alt=&#34;image&#34; /&gt;
-&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/data.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/output.png&#34; alt=&#34;image&#34; /&gt;
+&lt;img src=&#34;http://beyondblog.github.io/img/data.png&#34; alt=&#34;image&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;把这个二进制文件保存文件就可以看到个大概&lt;/p&gt;
 
@@ -370,10 +370,10 @@ Application started. Press Ctrl+C to shut down.
     
     <item>
       <title>Consul &#43; fabio 实现自动服务发现、负载均衡</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/consul_fabio_load_balancer/</link>
+      <link>http://beyondblog.github.io/post/consul_fabio_load_balancer/</link>
       <pubDate>Fri, 22 Jul 2016 09:07:10 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/consul_fabio_load_balancer/</guid>
+      <guid>http://beyondblog.github.io/post/consul_fabio_load_balancer/</guid>
       <description>
 
 &lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
@@ -490,7 +490,7 @@ networks:
 
 &lt;p&gt;也可以按照 docker hub 上的文档自己部署, 启动成功之后访问下 consul ui&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/consul-ui.png&#34; alt=&#34;consul&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/consul-ui.png&#34; alt=&#34;consul&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;然后部署 faibo
 docker-compose.yml&lt;/p&gt;
@@ -515,7 +515,7 @@ docker-compose.yml&lt;/p&gt;
  metrics.target = stdout
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/fabio.png&#34; alt=&#34;fabio&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/fabio.png&#34; alt=&#34;fabio&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;fabio 不仅仅可以与 consul 结合可以以手动写一些路由规则
 语法如下&lt;/p&gt;
@@ -720,7 +720,7 @@ api-tm2pk                                         1/1       Running   0         
 
 &lt;p&gt;10秒中瞬间扩容至10个 然后看下 consul 与 fabio&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/docker-consul.png&#34; alt=&#34;docker-consul&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/docker-consul.png&#34; alt=&#34;docker-consul&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;fabio&lt;/p&gt;
 
@@ -756,10 +756,10 @@ api-tm2pk                                         1/1       Running   0         
     
     <item>
       <title>使用gitlab 进行持续集成</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/gitlab_bot_ci/</link>
+      <link>http://beyondblog.github.io/post/gitlab_bot_ci/</link>
       <pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/gitlab_bot_ci/</guid>
+      <guid>http://beyondblog.github.io/post/gitlab_bot_ci/</guid>
       <description>
 
 &lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;
@@ -880,10 +880,10 @@ api-tm2pk                                         1/1       Running   0         
     
     <item>
       <title>kubernetes v1.0 指南</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/k8s/</link>
+      <link>http://beyondblog.github.io/post/k8s/</link>
       <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/k8s/</guid>
+      <guid>http://beyondblog.github.io/post/k8s/</guid>
       <description>
 
 &lt;p&gt;操作系统：&lt;/p&gt;
@@ -1188,10 +1188,10 @@ minion    kubernetes.io/hostname=minion   Ready
     
     <item>
       <title>使用GDB调试Go语言</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/gdb_debug_example/</link>
+      <link>http://beyondblog.github.io/post/gdb_debug_example/</link>
       <pubDate>Mon, 13 Apr 2015 07:07:51 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/gdb_debug_example/</guid>
+      <guid>http://beyondblog.github.io/post/gdb_debug_example/</guid>
       <description>
 
 &lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;

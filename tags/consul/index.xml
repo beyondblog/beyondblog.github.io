@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Consul on Beyondblog</title>
-    <link>aseUrl=http:/beyondblog.github.io/tags/consul/</link>
+    <link>http://beyondblog.github.io/tags/consul/</link>
     <description>Recent content in Consul on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 22 Jul 2016 09:07:10 +0800</lastBuildDate>
-    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
+    <atom:link href="http://beyondblog.github.io/tags/consul/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Consul &#43; fabio 实现自动服务发现、负载均衡</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/consul_fabio_load_balancer/</link>
+      <link>http://beyondblog.github.io/post/consul_fabio_load_balancer/</link>
       <pubDate>Fri, 22 Jul 2016 09:07:10 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/consul_fabio_load_balancer/</guid>
+      <guid>http://beyondblog.github.io/post/consul_fabio_load_balancer/</guid>
       <description>
 
 &lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
@@ -131,7 +131,7 @@ networks:
 
 &lt;p&gt;也可以按照 docker hub 上的文档自己部署, 启动成功之后访问下 consul ui&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/consul-ui.png&#34; alt=&#34;consul&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/consul-ui.png&#34; alt=&#34;consul&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;然后部署 faibo
 docker-compose.yml&lt;/p&gt;
@@ -156,7 +156,7 @@ docker-compose.yml&lt;/p&gt;
  metrics.target = stdout
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/fabio.png&#34; alt=&#34;fabio&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/fabio.png&#34; alt=&#34;fabio&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;fabio 不仅仅可以与 consul 结合可以以手动写一些路由规则
 语法如下&lt;/p&gt;
@@ -361,7 +361,7 @@ api-tm2pk                                         1/1       Running   0         
 
 &lt;p&gt;10秒中瞬间扩容至10个 然后看下 consul 与 fabio&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/docker-consul.png&#34; alt=&#34;docker-consul&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/docker-consul.png&#34; alt=&#34;docker-consul&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;fabio&lt;/p&gt;
 
