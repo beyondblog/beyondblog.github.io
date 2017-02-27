@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Telegraf on Beyondblog</title>
-    <link>aseUrl=http:/beyondblog.github.io/tags/telegraf/</link>
+    <link>http://beyondblog.github.io/tags/telegraf/</link>
     <description>Recent content in Telegraf on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate>
-    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
+    <atom:link href="http://beyondblog.github.io/tags/telegraf/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>使用grafana &#43; telegraf 快速搭建docker监控平台</title>
-      <link>/aseUrl=http:/beyondblog.github.io/post/grafana_telegraf_docker/</link>
+      <link>http://beyondblog.github.io/post/grafana_telegraf_docker/</link>
       <pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate>
       
-      <guid>/aseUrl=http:/beyondblog.github.io/post/grafana_telegraf_docker/</guid>
+      <guid>http://beyondblog.github.io/post/grafana_telegraf_docker/</guid>
       <description>
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://grafana.org&#34;&gt;grafana&lt;/a&gt; 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p&gt;
 
@@ -113,7 +113,7 @@
 
 &lt;p&gt;telegraf 允许之后就会把数据陆陆续续的写入influxdb中,这儿可以看下有那些数据.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/influxdb-telegraf.png&#34; alt=&#34;influxdb-telegraf&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/influxdb-telegraf.png&#34; alt=&#34;influxdb-telegraf&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;如上图所示 cpu disk docker  net 等等信息均以写入influxdb中&lt;/p&gt;
 
@@ -126,7 +126,7 @@
 
 &lt;p&gt;查询所有主机容器的cpu使用率&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-docker.png&#34; alt=&#34;grafana-docker&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-docker.png&#34; alt=&#34;grafana-docker&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;自己写各种查询很繁琐官方提供了一套现成的&lt;a href=&#34;https://grafana.net/dashboards/61&#34;&gt;dashboard&lt;/a&gt;直接导入即可.&lt;/p&gt;
 
@@ -134,19 +134,19 @@
 
 &lt;p&gt;效果如下:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-telegraf-dashboard-01.png&#34; alt=&#34;grafana-telegraf-dashboard-01&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-dashboard-01.png&#34; alt=&#34;grafana-telegraf-dashboard-01&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-telegraf-dashboard-02.png&#34; alt=&#34;grafana-telegraf-dashboard-02&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-dashboard-02.png&#34; alt=&#34;grafana-telegraf-dashboard-02&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;导入的东西很全,可以删除不需要的留下需要的&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/dashboard-setting.png&#34; alt=&#34;dashboard-setting&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/dashboard-setting.png&#34; alt=&#34;dashboard-setting&#34; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;alerting&#34;&gt;Alerting&lt;/h2&gt;
 
 &lt;p&gt;Grafana 支持Alerting 通知功能,允许添加一个条件当满足时自动出发通知&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-alerting.png&#34; alt=&#34;grafana-alerting&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-alerting.png&#34; alt=&#34;grafana-alerting&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;可以参考官方的文档 &lt;a href=&#34;http://docs.grafana.org/alerting/rules/&#34;&gt;alerting&lt;/a&gt; 以及 &lt;a href=&#34;http://docs.grafana.org/alerting/notifications/&#34;&gt;notifications&lt;/a&gt;&lt;/p&gt;
 
