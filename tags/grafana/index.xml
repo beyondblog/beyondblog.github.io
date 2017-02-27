@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Grafana on Beyondblog</title>
+    <link>aseUrl=http:/beyondblog.github.io/tags/grafana/</link>
+    <description>Recent content in Grafana on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate>
+    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>使用grafana &#43; telegraf 快速搭建docker监控平台</title>
+      <link>/aseUrl=http:/beyondblog.github.io/post/grafana_telegraf_docker/</link>
+      <pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate>
+      
+      <guid>/aseUrl=http:/beyondblog.github.io/post/grafana_telegraf_docker/</guid>
+      <description>
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://grafana.org&#34;&gt;grafana&lt;/a&gt; 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p&gt;
+
+&lt;p&gt;docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现&lt;/p&gt;
+
+&lt;h2 id=&#34;telegraf-https-docs-influxdata-com-telegraf-v1-2&#34;&gt;&lt;a href=&#34;https://docs.influxdata.com/telegraf/v1.2/&#34;&gt;telegraf&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
+等等 还支持第三方的服务)等众多优点&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/influxdata/telegraf#input-plugins&#34;&gt;支持的收集的插件列表&lt;/a&gt;
+例如常见的&lt;a href=&#34;https://github.com/influxdata/telegraf/tree/master/plugins/inputs/system&#34;&gt;系统基本信息&lt;/a&gt; cpu 内存 网络 文件io
+都能收集,以及自定义的&lt;a href=&#34;https://github.com/influxdata/telegraf/tree/master/plugins/inputs/httpjson&#34;&gt;http json收集&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/influxdata/telegraf#output-plugins&#34;&gt;支持的存放插件列表&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://docs.influxdata.com/telegraf/v1.2/introduction/installation/&#34;&gt;安装方式也比较简单&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;telegraf-conf&#34;&gt;telegraf.conf&lt;/h2&gt;
+
+&lt;p&gt;配置 telegraf的各项收集指标, 这儿简单的写一个&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[agent]
+  interval = &amp;quot;10s&amp;quot;
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = &amp;quot;0s&amp;quot;
+  flush_interval = &amp;quot;10s&amp;quot;
+  flush_jitter = &amp;quot;0s&amp;quot;
+  precision = &amp;quot;&amp;quot;
+  debug = false
+  quiet = false
+  hostname = &amp;quot;&amp;quot;
+  omit_hostname = false
+[[outputs.influxdb]]
+  urls = [&amp;quot;http://&amp;lt;influxdb&amp;gt;:8086&amp;quot;] # required
+  database = &amp;quot;telegraf&amp;quot; # required
+  retention_policy = &amp;quot;&amp;quot;
+  write_consistency = &amp;quot;any&amp;quot;
+  timeout = &amp;quot;5s&amp;quot;
+  username = &amp;quot;user&amp;quot;
+  password = &amp;quot;password&amp;quot;
+
+# 收集 cpu 磁盘 内存  docker 等
+
+[[inputs.cpu]]
+  percpu = true
+  totalcpu = true
+  fielddrop = [&amp;quot;time_*&amp;quot;]
+[[inputs.disk]]
+  ignore_fs = [&amp;quot;tmpfs&amp;quot;, &amp;quot;devtmpfs&amp;quot;]
+[[inputs.diskio]]
+[[inputs.kernel]]
+[[inputs.mem]]
+[[inputs.processes]]
+[[inputs.swap]]
+# docker 需要指定sock文件位置 可能还需要加个权限 sudo usermod -aG docker telegraf
+[[inputs.docker]]
+  endpoint = &amp;quot;unix:///var/run/docker.sock&amp;quot;
+# 收集指定网卡的网络情况
+[[inputs.net]]
+  interfaces = [&amp;quot;eno1&amp;quot;]
+[[inputs.system]]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这儿把收集过来的数据存放到 influxdb中方便grfana读取,当然也可以选择其他的存储方式.&lt;/p&gt;
+
+&lt;p&gt;官方提供的配置文件有详细的说明.&lt;/p&gt;
+
+&lt;p&gt;配置完了之后可以启动telegraf服务,在centos 7 中 如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;systemctl start telegraf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;也可以用docker 方式运行,这儿提供一个docker-compose&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;telegraf:
+  net: &amp;quot;host&amp;quot;
+  container_name: telegraf
+  image: telegraf:1.2.1-alpine
+  volumes:
+    - ./config:/etc/telegraf
+    - /sys:/rootfs/sys:ro
+    - /proc:/rootfs/proc:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+  environment:
+    - &#39;HOST_PROC=/rootfs/proc&#39;
+    - &#39;HOST_SYS=/rootfs/sys&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;influxdb&#34;&gt;influxdb&lt;/h2&gt;
+
+&lt;p&gt;telegraf 允许之后就会把数据陆陆续续的写入influxdb中,这儿可以看下有那些数据.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/influxdb-telegraf.png&#34; alt=&#34;influxdb-telegraf&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如上图所示 cpu disk docker  net 等等信息均以写入influxdb中&lt;/p&gt;
+
+&lt;h2 id=&#34;grafana&#34;&gt;grafana&lt;/h2&gt;
+
+&lt;p&gt;grafana 新建一个graph 面板,编辑查询语句填入&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;SELECT mean(&amp;quot;usage_percent&amp;quot;) FROM &amp;quot;docker_container_cpu&amp;quot; WHERE $timeFilter GROUP BY time($interval), &amp;quot;container_name&amp;quot; fill(null)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;查询所有主机容器的cpu使用率&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-docker.png&#34; alt=&#34;grafana-docker&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;自己写各种查询很繁琐官方提供了一套现成的&lt;a href=&#34;https://grafana.net/dashboards/61&#34;&gt;dashboard&lt;/a&gt;直接导入即可.&lt;/p&gt;
+
+&lt;p&gt;导入之前需要先安装&lt;a href=&#34;https://grafana.net/plugins/grafana-piechart-panel&#34;&gt;Pie Chart&lt;/a&gt;插件&lt;/p&gt;
+
+&lt;p&gt;效果如下:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-telegraf-dashboard-01.png&#34; alt=&#34;grafana-telegraf-dashboard-01&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-telegraf-dashboard-02.png&#34; alt=&#34;grafana-telegraf-dashboard-02&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;导入的东西很全,可以删除不需要的留下需要的&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/dashboard-setting.png&#34; alt=&#34;dashboard-setting&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;alerting&#34;&gt;Alerting&lt;/h2&gt;
+
+&lt;p&gt;Grafana 支持Alerting 通知功能,允许添加一个条件当满足时自动出发通知&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;aseUrl=http://beyondblog.github.io/img/grafana-alerting.png&#34; alt=&#34;grafana-alerting&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以参考官方的文档 &lt;a href=&#34;http://docs.grafana.org/alerting/rules/&#34;&gt;alerting&lt;/a&gt; 以及 &lt;a href=&#34;http://docs.grafana.org/alerting/notifications/&#34;&gt;notifications&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;基本上telegraf 可以满足收集的大部分需求, 其实官方还提供了一个叫做&lt;a href=&#34;https://github.com/influxdata/chronograf&#34;&gt;chronograf&lt;/a&gt; 功能和grafana类似可能更加易用&lt;/p&gt;
+
+&lt;p&gt;还有一个叫做 &lt;a href=&#34;https://docs.influxdata.com/kapacitor/v1.2/&#34;&gt;kapacitor&lt;/a&gt;的工具也是基于influxdb 做通知用的&lt;/p&gt;
+
+&lt;p&gt;其实看下influxdata旗下的&lt;a href=&#34;https://docs.influxdata.com/&#34;&gt;产品&lt;/a&gt; 可以很容易搭建一个数据分析监控系统&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

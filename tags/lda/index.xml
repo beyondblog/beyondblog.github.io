@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Lda on Beyondblog</title>
+    <link>aseUrl=http:/beyondblog.github.io/tags/lda/</link>
+    <description>Recent content in Lda on Beyondblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 01 Feb 2017 16:51:44 +0800</lastBuildDate>
+    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>gibbs_lda_learning</title>
+      <link>/aseUrl=http:/beyondblog.github.io/post/gibbs_lda_learning/</link>
+      <pubDate>Wed, 01 Feb 2017 16:51:44 +0800</pubDate>
+      
+      <guid>/aseUrl=http:/beyondblog.github.io/post/gibbs_lda_learning/</guid>
+      <description>&lt;p&gt;最近做了一段时间爬虫相关的工作,抓取了网络上大量的新闻一天20多万已经有了200W的新闻,抓了这么多数据就是为了后面做分析用首先想先做个新闻自动分类的工作。&lt;/p&gt;
+
+&lt;p&gt;查阅了很多资料,有很多中方式搞例如如果有比较丰富的&amp;rdquo;类型词库&amp;rdquo;,就可以用朴素贝叶斯做一个简单的分类器,后来发现了利用&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B&#34;&gt;主体模型&lt;/a&gt;来搞&lt;/p&gt;
+
+&lt;p&gt;这儿记录下最简单的&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E9%9A%90%E5%90%AB%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E5%88%86%E5%B8%83&#34;&gt;LDA 主题模型&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

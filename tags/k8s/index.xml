@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>K8s on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/k8s/</link>
+    <link>aseUrl=http:/beyondblog.github.io/tags/k8s/</link>
     <description>Recent content in K8s on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
-    <atom:link href="http://beyondblog.github.io/tags/k8s/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="#ZgotmplZ" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Centos 手动安装 Kubernetes</title>
-      <link>http://beyondblog.github.io/post/manual_install_kubernetes/</link>
+      <link>/aseUrl=http:/beyondblog.github.io/post/manual_install_kubernetes/</link>
       <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
       
-      <guid>http://beyondblog.github.io/post/manual_install_kubernetes/</guid>
+      <guid>/aseUrl=http:/beyondblog.github.io/post/manual_install_kubernetes/</guid>
       <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
 所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;
 
