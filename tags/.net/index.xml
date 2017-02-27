@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>.Net on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/index.net/</link>
+    <link>http://beyondblog.github.io/tags/.net/index.xml</link>
     <description>Recent content in .Net on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 01 Aug 2016 08:07:10 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/.net/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -15,9 +15,7 @@
       <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/dotnet_core_for_docker/</guid>
-      <description>
-
-&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
+      <description>&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
 
 &lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;
 
@@ -34,6 +32,8 @@
 
 &lt;pre&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;上面这个命令的意思是 让 docker 运行(&lt;code&gt;docker run&lt;/code&gt;)一个dotnet:latest的镜像(&lt;code&gt;microsoft/dotnet:latest&lt;/code&gt;) 并且把本地的/home/hello_dotnet卷路径挂载到容器的/home/hello_dotnet 下面(&lt;code&gt;-v /home/hello_dotnet/:/home/hello_dotnet/&lt;/code&gt;)然后提供交互式模式能够输入输出(&lt;code&gt;-it&lt;/code&gt;)退出之后自动删除容器(&lt;code&gt;--rm&lt;/code&gt;)&lt;/p&gt;
 
@@ -220,8 +220,7 @@ Application started. Press Ctrl+C to shut down.
 
 &lt;p&gt;[0] &lt;a href=&#34;https://dotnet.github.io&#34;&gt;https://dotnet.github.io&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[1] &lt;a href=&#34;https://docs.docker.com/engine/reference/builder&#34;&gt;https://docs.docker.com/engine/reference/builder&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[1] &lt;a href=&#34;https://docs.docker.com/engine/reference/builder&#34;&gt;https://docs.docker.com/engine/reference/builder&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

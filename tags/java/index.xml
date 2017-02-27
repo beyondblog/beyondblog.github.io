@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Java on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/java/</link>
+    <link>http://beyondblog.github.io/tags/java/index.xml</link>
     <description>Recent content in Java on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 27 Jul 2016 08:07:10 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -15,9 +15,7 @@
       <pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/java_analysis_heap_dump/</guid>
-      <description>
-
-&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
+      <description>&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
 
 &lt;h3 id=&#34;获取-thread-dump-文件&#34;&gt;获取 thread dump 文件&lt;/h3&gt;
 
@@ -43,6 +41,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;dump 文件就可以用一些工具查看例如 jhat visual vm mat&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;如下所示&lt;/p&gt;
 
@@ -92,8 +92,7 @@
 
 &lt;p&gt;[2] &lt;a href=&#34;https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html&#34;&gt;https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[3] &lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;http://jameswxx.iteye.com/blog/1041173&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[3] &lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;http://jameswxx.iteye.com/blog/1041173&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

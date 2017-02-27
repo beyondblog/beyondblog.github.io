@@ -2,10 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Beyondblog</title>
-    <link>http://beyondblog.github.io/post/</link>
+    <link>http://beyondblog.github.io/post/index.xml</link>
     <description>Recent content in Posts on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
+    <copyright>beyondblog</copyright>
     <lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate>
     <atom:link href="http://beyondblog.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,9 +16,7 @@
       <pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/grafana_telegraf_docker/</guid>
-      <description>
-
-&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
+      <description>&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://grafana.org&#34;&gt;grafana&lt;/a&gt; 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p&gt;
 
@@ -27,6 +26,8 @@
 
 &lt;p&gt;telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
 等等 还支持第三方的服务)等众多优点&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/influxdata/telegraf#input-plugins&#34;&gt;支持的收集的插件列表&lt;/a&gt;
 例如常见的&lt;a href=&#34;https://github.com/influxdata/telegraf/tree/master/plugins/inputs/system&#34;&gt;系统基本信息&lt;/a&gt; cpu 内存 网络 文件io
@@ -154,8 +155,7 @@
 
 &lt;p&gt;还有一个叫做 &lt;a href=&#34;https://docs.influxdata.com/kapacitor/v1.2/&#34;&gt;kapacitor&lt;/a&gt;的工具也是基于influxdb 做通知用的&lt;/p&gt;
 
-&lt;p&gt;其实看下influxdata旗下的&lt;a href=&#34;https://docs.influxdata.com/&#34;&gt;产品&lt;/a&gt; 可以很容易搭建一个数据分析监控系统&lt;/p&gt;
-</description>
+&lt;p&gt;其实看下influxdata旗下的&lt;a href=&#34;https://docs.influxdata.com/&#34;&gt;产品&lt;/a&gt; 可以很容易搭建一个数据分析监控系统&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -174,6 +174,8 @@
 &lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
 &lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:&lt;/p&gt;
 
@@ -211,8 +213,7 @@ chown  -R kube:kube /var/run/kubernetes
 &lt;p&gt;重新 reload 下服务单元&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;systemctl daemon-reload
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -221,9 +222,7 @@ chown  -R kube:kube /var/run/kubernetes
       <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/dotnet_core_for_docker/</guid>
-      <description>
-
-&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
+      <description>&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
 
 &lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;
 
@@ -240,6 +239,8 @@ chown  -R kube:kube /var/run/kubernetes
 
 &lt;pre&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;上面这个命令的意思是 让 docker 运行(&lt;code&gt;docker run&lt;/code&gt;)一个dotnet:latest的镜像(&lt;code&gt;microsoft/dotnet:latest&lt;/code&gt;) 并且把本地的/home/hello_dotnet卷路径挂载到容器的/home/hello_dotnet 下面(&lt;code&gt;-v /home/hello_dotnet/:/home/hello_dotnet/&lt;/code&gt;)然后提供交互式模式能够输入输出(&lt;code&gt;-it&lt;/code&gt;)退出之后自动删除容器(&lt;code&gt;--rm&lt;/code&gt;)&lt;/p&gt;
 
@@ -426,8 +427,7 @@ Application started. Press Ctrl+C to shut down.
 
 &lt;p&gt;[0] &lt;a href=&#34;https://dotnet.github.io&#34;&gt;https://dotnet.github.io&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[1] &lt;a href=&#34;https://docs.docker.com/engine/reference/builder&#34;&gt;https://docs.docker.com/engine/reference/builder&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[1] &lt;a href=&#34;https://docs.docker.com/engine/reference/builder&#34;&gt;https://docs.docker.com/engine/reference/builder&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -436,9 +436,7 @@ Application started. Press Ctrl+C to shut down.
       <pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/java_analysis_heap_dump/</guid>
-      <description>
-
-&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
+      <description>&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
 
 &lt;h3 id=&#34;获取-thread-dump-文件&#34;&gt;获取 thread dump 文件&lt;/h3&gt;
 
@@ -464,6 +462,8 @@ Application started. Press Ctrl+C to shut down.
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;dump 文件就可以用一些工具查看例如 jhat visual vm mat&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;如下所示&lt;/p&gt;
 
@@ -513,8 +513,7 @@ Application started. Press Ctrl+C to shut down.
 
 &lt;p&gt;[2] &lt;a href=&#34;https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html&#34;&gt;https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[3] &lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;http://jameswxx.iteye.com/blog/1041173&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[3] &lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;http://jameswxx.iteye.com/blog/1041173&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -523,9 +522,7 @@ Application started. Press Ctrl+C to shut down.
       <pubDate>Fri, 22 Jul 2016 09:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/consul_fabio_load_balancer/</guid>
-      <description>
-
-&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
+      <description>&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Consul 介绍&lt;/li&gt;
@@ -542,6 +539,8 @@ Application started. Press Ctrl+C to shut down.
 
 &lt;p&gt;&lt;a href=&#34;https://www.consul.io/&#34;&gt;Consul&lt;/a&gt; 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件
 比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 &lt;a href=&#34;http://dockone.io/article/300&#34;&gt;Consul和ZooKeeper的区别&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;fabio&#34;&gt;fabio&lt;/h3&gt;
 
@@ -899,8 +898,7 @@ api-tm2pk                                         1/1       Running   0         
 &lt;li&gt;&lt;a href=&#34;https://github.com/eBay/fabio/wiki/Configuration&#34;&gt;https://github.com/eBay/fabio/wiki/Configuration&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://www.consul.io/docs/agent/basics.html&#34;&gt;https://www.consul.io/docs/agent/basics.html&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html&#34;&gt;http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -909,9 +907,7 @@ api-tm2pk                                         1/1       Running   0         
       <pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/gitlab_bot_ci/</guid>
-      <description>
-
-&lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;
+      <description>&lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;
 
 &lt;p&gt;那么利用这些个接口我们可以弄一个简单的自动构建机器人来提高团队之间的开发效率&lt;/p&gt;
 
@@ -921,7 +917,8 @@ api-tm2pk                                         1/1       Running   0         
 
 &lt;p&gt;这儿订阅 push 事件 comments事件 和 merge Request 事件。 如果有需要还可以开启https支持 然后填写一个url(这个就是自己实现的一个bot) 点击添加就好&lt;/p&gt;
 
-&lt;p&gt;然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）&lt;/p&gt;
+&lt;p&gt;然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）
+&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://ww1.sinaimg.cn/large/74311666jw1f1q9z5b8z0j21kw0j40vl.jpg&#34; alt=&#34;private token&#34; /&gt;&lt;/p&gt;
 
@@ -1023,8 +1020,7 @@ api-tm2pk                                         1/1       Running   0         
 
 &lt;p&gt;[3] &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[4] &lt;a href=&#34;https://github.com/gitlabhq/gitlabhq/tree/master/doc/api&#34;&gt;https://github.com/gitlabhq/gitlabhq/tree/master/doc/api&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[4] &lt;a href=&#34;https://github.com/gitlabhq/gitlabhq/tree/master/doc/api&#34;&gt;https://github.com/gitlabhq/gitlabhq/tree/master/doc/api&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -1033,9 +1029,7 @@ api-tm2pk                                         1/1       Running   0         
       <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/k8s/</guid>
-      <description>
-
-&lt;p&gt;操作系统：&lt;/p&gt;
+      <description>&lt;p&gt;操作系统：&lt;/p&gt;
 
 &lt;p&gt;CentOS7&lt;/p&gt;
 
@@ -1067,7 +1061,8 @@ Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;
 Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;###软件依赖&lt;/p&gt;
+&lt;p&gt;
+###软件依赖&lt;/p&gt;
 
 &lt;p&gt;master 主机&lt;/p&gt;
 
@@ -1331,8 +1326,7 @@ minion    kubernetes.io/hostname=minion   Ready
 
 &lt;p&gt;这个 docs 就是之前下载的kubernetes.tar.gz&lt;/p&gt;
 
-&lt;p&gt;这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络&lt;/p&gt;
-</description>
+&lt;p&gt;这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -1341,9 +1335,7 @@ minion    kubernetes.io/hostname=minion   Ready
       <pubDate>Mon, 13 Apr 2015 07:07:51 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/gdb_debug_example/</guid>
-      <description>
-
-&lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;
+      <description>&lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;
 
 &lt;p&gt;ps:网上有很多文章都有描述,但是都不是很全面,这里将那些方法汇总一下&lt;/p&gt;
 
@@ -1361,6 +1353,8 @@ minion    kubernetes.io/hostname=minion   Ready
 Requires an argument. Valid arguments are auto, local, unknown, ada, c, c++, asm, minimal, d, fortran, objective-c, go, java, modula-2, opencl, pascal.
 (gdb)
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;准备工作&#34;&gt;准备工作&lt;/h3&gt;
 
@@ -1736,8 +1730,7 @@ set b = 10
 
 &lt;p&gt;[2] &lt;a href=&#34;http://laokaddk.blog.51cto.com/368606/945057/&#34;&gt;http://laokaddk.blog.51cto.com/368606/945057/&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[3] &lt;a href=&#34;http://blog.csdn.net/lwbeyond/article/details/7839225&#34;&gt;http://blog.csdn.net/lwbeyond/article/details/7839225&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[3] &lt;a href=&#34;http://blog.csdn.net/lwbeyond/article/details/7839225&#34;&gt;http://blog.csdn.net/lwbeyond/article/details/7839225&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

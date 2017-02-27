@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Fabio on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/fabio/</link>
+    <link>http://beyondblog.github.io/tags/fabio/index.xml</link>
     <description>Recent content in Fabio on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 22 Jul 2016 09:07:10 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/fabio/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -15,9 +15,7 @@
       <pubDate>Fri, 22 Jul 2016 09:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/consul_fabio_load_balancer/</guid>
-      <description>
-
-&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
+      <description>&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Consul 介绍&lt;/li&gt;
@@ -34,6 +32,8 @@
 
 &lt;p&gt;&lt;a href=&#34;https://www.consul.io/&#34;&gt;Consul&lt;/a&gt; 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件
 比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 &lt;a href=&#34;http://dockone.io/article/300&#34;&gt;Consul和ZooKeeper的区别&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;fabio&#34;&gt;fabio&lt;/h3&gt;
 
@@ -391,8 +391,7 @@ api-tm2pk                                         1/1       Running   0         
 &lt;li&gt;&lt;a href=&#34;https://github.com/eBay/fabio/wiki/Configuration&#34;&gt;https://github.com/eBay/fabio/wiki/Configuration&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://www.consul.io/docs/agent/basics.html&#34;&gt;https://www.consul.io/docs/agent/basics.html&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html&#34;&gt;http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>

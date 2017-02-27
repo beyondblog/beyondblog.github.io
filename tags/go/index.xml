@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Go on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/go/</link>
+    <link>http://beyondblog.github.io/tags/go/index.xml</link>
     <description>Recent content in Go on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 13 Apr 2015 07:07:51 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -15,9 +15,7 @@
       <pubDate>Mon, 13 Apr 2015 07:07:51 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/gdb_debug_example/</guid>
-      <description>
-
-&lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;
+      <description>&lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;
 
 &lt;p&gt;ps:网上有很多文章都有描述,但是都不是很全面,这里将那些方法汇总一下&lt;/p&gt;
 
@@ -35,6 +33,8 @@
 Requires an argument. Valid arguments are auto, local, unknown, ada, c, c++, asm, minimal, d, fortran, objective-c, go, java, modula-2, opencl, pascal.
 (gdb)
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;准备工作&#34;&gt;准备工作&lt;/h3&gt;
 
@@ -410,8 +410,7 @@ set b = 10
 
 &lt;p&gt;[2] &lt;a href=&#34;http://laokaddk.blog.51cto.com/368606/945057/&#34;&gt;http://laokaddk.blog.51cto.com/368606/945057/&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[3] &lt;a href=&#34;http://blog.csdn.net/lwbeyond/article/details/7839225&#34;&gt;http://blog.csdn.net/lwbeyond/article/details/7839225&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;[3] &lt;a href=&#34;http://blog.csdn.net/lwbeyond/article/details/7839225&#34;&gt;http://blog.csdn.net/lwbeyond/article/details/7839225&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

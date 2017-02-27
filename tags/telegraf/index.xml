@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Telegraf on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/telegraf/</link>
+    <link>http://beyondblog.github.io/tags/telegraf/index.xml</link>
     <description>Recent content in Telegraf on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/telegraf/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -15,9 +15,7 @@
       <pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/grafana_telegraf_docker/</guid>
-      <description>
-
-&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
+      <description>&lt;p&gt;&lt;img src=&#34;http://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://grafana.org&#34;&gt;grafana&lt;/a&gt; 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p&gt;
 
@@ -27,6 +25,8 @@
 
 &lt;p&gt;telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
 等等 还支持第三方的服务)等众多优点&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/influxdata/telegraf#input-plugins&#34;&gt;支持的收集的插件列表&lt;/a&gt;
 例如常见的&lt;a href=&#34;https://github.com/influxdata/telegraf/tree/master/plugins/inputs/system&#34;&gt;系统基本信息&lt;/a&gt; cpu 内存 网络 文件io
@@ -154,8 +154,7 @@
 
 &lt;p&gt;还有一个叫做 &lt;a href=&#34;https://docs.influxdata.com/kapacitor/v1.2/&#34;&gt;kapacitor&lt;/a&gt;的工具也是基于influxdb 做通知用的&lt;/p&gt;
 
-&lt;p&gt;其实看下influxdata旗下的&lt;a href=&#34;https://docs.influxdata.com/&#34;&gt;产品&lt;/a&gt; 可以很容易搭建一个数据分析监控系统&lt;/p&gt;
-</description>
+&lt;p&gt;其实看下influxdata旗下的&lt;a href=&#34;https://docs.influxdata.com/&#34;&gt;产品&lt;/a&gt; 可以很容易搭建一个数据分析监控系统&lt;/p&gt;</description>
     </item>
     
   </channel>

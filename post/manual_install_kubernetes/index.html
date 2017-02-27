@@ -7,7 +7,7 @@
         <meta name="author">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="generator" content="Hugo 0.16" />
+        <meta name="generator" content="Hugo 0.18.1" />
           <link href="http://beyondblog.github.io/post/index.xml" rel="alternate" type="application/rss+xml" title="Beyondblog" />
           <link href="http://beyondblog.github.io/post/index.xml" rel="feed" type="application/rss+xml" title="Beyondblog" />
         <link href='//fonts.googleapis.com/css?family=Roboto:400,300,700|Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
@@ -72,6 +72,8 @@
 <li>提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv</li>
 </ul>
 
+<p></p>
+
 <p>然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:</p>
 
 <p>添加一个 kube 组用户</p>
@@ -109,7 +111,6 @@ chown  -R kube:kube /var/run/kubernetes
 
 <pre><code>systemctl daemon-reload
 </code></pre>
-
             <ul class="share-buttons">
     <li>Share this article:</li>
     <li>

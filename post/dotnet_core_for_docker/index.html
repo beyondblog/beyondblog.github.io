@@ -7,7 +7,7 @@
         <meta name="author">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="generator" content="Hugo 0.16" />
+        <meta name="generator" content="Hugo 0.18.1" />
           <link href="http://beyondblog.github.io/post/index.xml" rel="alternate" type="application/rss+xml" title="Beyondblog" />
           <link href="http://beyondblog.github.io/post/index.xml" rel="feed" type="application/rss+xml" title="Beyondblog" />
         <link href='//fonts.googleapis.com/css?family=Roboto:400,300,700|Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
@@ -59,9 +59,7 @@
 </span>
 </footer>
 
-            
-
-<p>本文描述下 .net core 在 docker 里面的玩法</p>
+            <p>本文描述下 .net core 在 docker 里面的玩法</p>
 
 <p>首先按照<a href="https://www.microsoft.com/net/core#docker">官方文档</a>先 拉取镜像</p>
 
@@ -78,6 +76,8 @@
 
 <pre><code>docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
 </code></pre>
+
+<p></p>
 
 <p>上面这个命令的意思是 让 docker 运行(<code>docker run</code>)一个dotnet:latest的镜像(<code>microsoft/dotnet:latest</code>) 并且把本地的/home/hello_dotnet卷路径挂载到容器的/home/hello_dotnet 下面(<code>-v /home/hello_dotnet/:/home/hello_dotnet/</code>)然后提供交互式模式能够输入输出(<code>-it</code>)退出之后自动删除容器(<code>--rm</code>)</p>
 
@@ -265,7 +265,6 @@ Application started. Press Ctrl+C to shut down.
 <p>[0] <a href="https://dotnet.github.io">https://dotnet.github.io</a></p>
 
 <p>[1] <a href="https://docs.docker.com/engine/reference/builder">https://docs.docker.com/engine/reference/builder</a></p>
-
             <ul class="share-buttons">
     <li>Share this article:</li>
     <li>

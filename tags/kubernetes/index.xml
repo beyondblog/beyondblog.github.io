@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Kubernetes on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/kubernetes/</link>
+    <link>http://beyondblog.github.io/tags/kubernetes/index.xml</link>
     <description>Recent content in Kubernetes on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -25,6 +25,8 @@
 &lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
 &lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:&lt;/p&gt;
 
@@ -62,8 +64,7 @@ chown  -R kube:kube /var/run/kubernetes
 &lt;p&gt;重新 reload 下服务单元&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;systemctl daemon-reload
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -72,9 +73,7 @@ chown  -R kube:kube /var/run/kubernetes
       <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
       
       <guid>http://beyondblog.github.io/post/k8s/</guid>
-      <description>
-
-&lt;p&gt;操作系统：&lt;/p&gt;
+      <description>&lt;p&gt;操作系统：&lt;/p&gt;
 
 &lt;p&gt;CentOS7&lt;/p&gt;
 
@@ -106,7 +105,8 @@ Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;
 Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;###软件依赖&lt;/p&gt;
+&lt;p&gt;
+###软件依赖&lt;/p&gt;
 
 &lt;p&gt;master 主机&lt;/p&gt;
 
@@ -370,8 +370,7 @@ minion    kubernetes.io/hostname=minion   Ready
 
 &lt;p&gt;这个 docs 就是之前下载的kubernetes.tar.gz&lt;/p&gt;
 
-&lt;p&gt;这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络&lt;/p&gt;
-</description>
+&lt;p&gt;这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络&lt;/p&gt;</description>
     </item>
     
   </channel>

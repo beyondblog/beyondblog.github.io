@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>K8s on Beyondblog</title>
-    <link>http://beyondblog.github.io/tags/k8s/</link>
+    <link>http://beyondblog.github.io/tags/k8s/index.xml</link>
     <description>Recent content in K8s on Beyondblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <copyright>beyondblog</copyright>
     <atom:link href="http://beyondblog.github.io/tags/k8s/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -25,6 +25,8 @@
 &lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
 &lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:&lt;/p&gt;
 
@@ -62,8 +64,7 @@ chown  -R kube:kube /var/run/kubernetes
 &lt;p&gt;重新 reload 下服务单元&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;systemctl daemon-reload
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>
