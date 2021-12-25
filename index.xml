@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>beyondのblog</title>
+    <link>https://beyondblog.github.io/</link>
+    <description>Recent content on beyondのblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright beyondblog</copyright>
+    <lastBuildDate>Wed, 09 Dec 2020 08:10:46 +0800</lastBuildDate><atom:link href="https://beyondblog.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用antlr4 解析sql语句</title>
+      <link>https://beyondblog.github.io/posts/sql_antlr4_example/</link>
+      <pubDate>Wed, 09 Dec 2020 08:10:46 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/sql_antlr4_example/</guid>
+      <description>最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+  在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+  实现自定义的Visitor
+  解析 table name, colume, comment 生成GraphQL 的定义
+  效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(100) DEFAULT NULL COMMENT &amp;#39;用户名称&amp;#39;, `type` tinyint DEFAULT NULL COMMENT &amp;#39;类型: xxxxxxxx&amp;#39;, `note` varchar(200) DEFAULT NULL COMMENT &amp;#39;备注&amp;#39;, `status` tinyint NOT NULL DEFAULT &amp;#39;1&amp;#39; COMMENT &amp;#39;0-禁用 1-启用 2-删除&amp;#39;, `create_time` bigint DEFAULT NULL COMMENT &amp;#39;创建时间&amp;#39;, `update_time` bigint DEFAULT NULL COMMENT &amp;#39;修改时间&amp;#39;, PRIMARY KEY (`id`) ) ENGINE=InnoDB COMMENT=&amp;#39;用户&amp;#39; [main] INFO com.</description>
+    </item>
+    
+    <item>
+      <title>使用grafana &#43; telegraf 快速搭建docker监控平台</title>
+      <link>https://beyondblog.github.io/posts/grafana_telegraf_docker/</link>
+      <pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/grafana_telegraf_docker/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://grafana.org&#34;&gt;grafana&lt;/a&gt; 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p&gt;
+&lt;p&gt;docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现&lt;/p&gt;
+&lt;h2 id=&#34;telegrafhttpsdocsinfluxdatacomtelegrafv12&#34;&gt;&lt;a href=&#34;https://docs.influxdata.com/telegraf/v1.2/&#34;&gt;telegraf&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
+等等 还支持第三方的服务)等众多优点&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>https://beyondblog.github.io/posts/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;
+&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;
+&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;
+&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;
+&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>.NET core for docker</title>
+      <link>https://beyondblog.github.io/posts/dotnet_core_for_docker/</link>
+      <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/dotnet_core_for_docker/</guid>
+      <description>&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;
+&lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; docker pull microsoft/dotnet:latest
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dotnet new -t web
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果本地没有 dotnew 运行时可以docker run 一个&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>分析 heap dump 文件</title>
+      <link>https://beyondblog.github.io/posts/java_analysis_heap_dump/</link>
+      <pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/java_analysis_heap_dump/</guid>
+      <description>&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
+&lt;h3 id=&#34;获取-thread-dump-文件&#34;&gt;获取 thread dump 文件&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;jstack &amp;lt;pid&amp;gt; &amp;gt; file.tdump
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;关于thread dump 的信息可以&lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;查看这里&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;heap dump 是 jvm 针对某一时刻生成的一份『快照』按照特定的格式保存到磁盘上，文件包含了很多信息例如 对象信息(包括对象的实例个数、各种字段的值) 、类信息、线程调用栈等等&lt;/p&gt;
+&lt;h3 id=&#34;手动获取-heap-dump-文件&#34;&gt;手动获取 heap dump 文件&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;jmap -dump:format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;自动获取-heap-dump-文件&#34;&gt;自动获取 heap dump 文件&lt;/h4&gt;
+&lt;p&gt;以Oracle JVM为例,在应用启动时配置相关的参数 -XX:+HeapDumpOnOutOfMemoryError，当应用抛出OutOfMemoryError时生成dump文件。-XX:HeapDumpPath 指定 dump 文件路径&lt;/p&gt;
+&lt;p&gt;这种方式获取的文件一般比较大几百兆吧,可以使用-dump:live选项只抓取当前存活的内存对象这样生成的 dump 文件会小一些&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;jmap -dump:live,format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;dump 文件就可以用一些工具查看例如 jhat visual vm mat&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Consul &#43; fabio 实现自动服务发现、负载均衡</title>
+      <link>https://beyondblog.github.io/posts/consul_fabio_load_balancer/</link>
+      <pubDate>Fri, 22 Jul 2016 09:07:10 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/consul_fabio_load_balancer/</guid>
+      <description>&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Consul 介绍&lt;/li&gt;
+&lt;li&gt;fabio  介绍&lt;/li&gt;
+&lt;li&gt;服务发现的特点&lt;/li&gt;
+&lt;li&gt;工作原理&lt;/li&gt;
+&lt;li&gt;Demo&lt;/li&gt;
+&lt;li&gt;结合kubernetes扩容&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;consul&#34;&gt;Consul&lt;/h3&gt;
+&lt;p&gt;hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.consul.io/&#34;&gt;Consul&lt;/a&gt; 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件
+比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 &lt;a href=&#34;http://dockone.io/article/300&#34;&gt;Consul和ZooKeeper的区别&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用gitlab 进行持续集成</title>
+      <link>https://beyondblog.github.io/posts/gitlab_bot_ci/</link>
+      <pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/gitlab_bot_ci/</guid>
+      <description>&lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;
+&lt;p&gt;那么利用这些个接口我们可以弄一个简单的自动构建机器人来提高团队之间的开发效率&lt;/p&gt;
+&lt;p&gt;首先进入项目的Settting页面&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://ww1.sinaimg.cn/large/74311666jw1f1q9twodw5j20j60h8acf.jpg&#34; alt=&#34;add web hooks&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这儿订阅 push 事件 comments事件 和 merge Request 事件。 如果有需要还可以开启https支持 然后填写一个url(这个就是自己实现的一个bot) 点击添加就好&lt;/p&gt;
+&lt;p&gt;然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>kubernetes v1.0 指南</title>
+      <link>https://beyondblog.github.io/posts/k8s/</link>
+      <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/k8s/</guid>
+      <description>&lt;p&gt;操作系统：&lt;/p&gt;
+&lt;p&gt;CentOS7&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Docker 版本&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;kubernetes 版本&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ kubectl version
+Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用GDB调试Go语言</title>
+      <link>https://beyondblog.github.io/posts/gdb_debug_example/</link>
+      <pubDate>Mon, 13 Apr 2015 07:07:51 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/gdb_debug_example/</guid>
+      <description>&lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;
+&lt;p&gt;ps:网上有很多文章都有描述,但是都不是很全面,这里将那些方法汇总一下&lt;/p&gt;
+&lt;h3 id=&#34;gdb简介&#34;&gt;GDB简介&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;GDB是GNU开源组织发布的一个强大的UNIX下的程序调试工具。或许，各位比较喜欢那种图形界面方式的，像VC、BCB等IDE的调试，但如果你是在UNIX平台下做软件，你会发现GDB这个调试工具有比VC、BCB的图形化调试器更强大的功能。所谓“寸有所长，尺有所短”就是这个道理。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;目前支持的语言 (GNU gdb (GDB) 7.8)&lt;/p&gt;
+&lt;p&gt;进入 gdb之后输入 set language 可以查看支持的语言列表&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ gdb
+(gdb) set language
+Requires an argument. Valid arguments are auto, local, unknown, ada, c, c++, asm, minimal, d, fortran, objective-c, go, java, modula-2, opencl, pascal.
+(gdb)
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sql on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/sql/</link>
+    <description>Recent content in sql on beyondのblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright beyondblog</copyright>
+    <lastBuildDate>Wed, 09 Dec 2020 08:10:46 +0800</lastBuildDate><atom:link href="https://beyondblog.github.io/tags/sql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用antlr4 解析sql语句</title>
+      <link>https://beyondblog.github.io/posts/sql_antlr4_example/</link>
+      <pubDate>Wed, 09 Dec 2020 08:10:46 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/sql_antlr4_example/</guid>
+      <description>最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+  在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+  实现自定义的Visitor
+  解析 table name, colume, comment 生成GraphQL 的定义
+  效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(100) DEFAULT NULL COMMENT &amp;#39;用户名称&amp;#39;, `type` tinyint DEFAULT NULL COMMENT &amp;#39;类型: xxxxxxxx&amp;#39;, `note` varchar(200) DEFAULT NULL COMMENT &amp;#39;备注&amp;#39;, `status` tinyint NOT NULL DEFAULT &amp;#39;1&amp;#39; COMMENT &amp;#39;0-禁用 1-启用 2-删除&amp;#39;, `create_time` bigint DEFAULT NULL COMMENT &amp;#39;创建时间&amp;#39;, `update_time` bigint DEFAULT NULL COMMENT &amp;#39;修改时间&amp;#39;, PRIMARY KEY (`id`) ) ENGINE=InnoDB COMMENT=&amp;#39;用户&amp;#39; [main] INFO com.</description>
+    </item>
+    
+  </channel>
+</rss>

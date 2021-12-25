@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/java/</link>
+    <description>Recent content in java on beyondのblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright beyondblog</copyright>
+    <lastBuildDate>Wed, 09 Dec 2020 08:10:46 +0800</lastBuildDate><atom:link href="https://beyondblog.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用antlr4 解析sql语句</title>
+      <link>https://beyondblog.github.io/posts/sql_antlr4_example/</link>
+      <pubDate>Wed, 09 Dec 2020 08:10:46 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/sql_antlr4_example/</guid>
+      <description>最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+  在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+  实现自定义的Visitor
+  解析 table name, colume, comment 生成GraphQL 的定义
+  效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(100) DEFAULT NULL COMMENT &amp;#39;用户名称&amp;#39;, `type` tinyint DEFAULT NULL COMMENT &amp;#39;类型: xxxxxxxx&amp;#39;, `note` varchar(200) DEFAULT NULL COMMENT &amp;#39;备注&amp;#39;, `status` tinyint NOT NULL DEFAULT &amp;#39;1&amp;#39; COMMENT &amp;#39;0-禁用 1-启用 2-删除&amp;#39;, `create_time` bigint DEFAULT NULL COMMENT &amp;#39;创建时间&amp;#39;, `update_time` bigint DEFAULT NULL COMMENT &amp;#39;修改时间&amp;#39;, PRIMARY KEY (`id`) ) ENGINE=InnoDB COMMENT=&amp;#39;用户&amp;#39; [main] INFO com.</description>
+    </item>
+    
+    <item>
+      <title>分析 heap dump 文件</title>
+      <link>https://beyondblog.github.io/posts/java_analysis_heap_dump/</link>
+      <pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate>
+      
+      <guid>https://beyondblog.github.io/posts/java_analysis_heap_dump/</guid>
+      <description>&lt;p&gt;分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p&gt;
+&lt;h3 id=&#34;获取-thread-dump-文件&#34;&gt;获取 thread dump 文件&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;jstack &amp;lt;pid&amp;gt; &amp;gt; file.tdump
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;关于thread dump 的信息可以&lt;a href=&#34;http://jameswxx.iteye.com/blog/1041173&#34;&gt;查看这里&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;heap dump 是 jvm 针对某一时刻生成的一份『快照』按照特定的格式保存到磁盘上，文件包含了很多信息例如 对象信息(包括对象的实例个数、各种字段的值) 、类信息、线程调用栈等等&lt;/p&gt;
+&lt;h3 id=&#34;手动获取-heap-dump-文件&#34;&gt;手动获取 heap dump 文件&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;jmap -dump:format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;自动获取-heap-dump-文件&#34;&gt;自动获取 heap dump 文件&lt;/h4&gt;
+&lt;p&gt;以Oracle JVM为例,在应用启动时配置相关的参数 -XX:+HeapDumpOnOutOfMemoryError，当应用抛出OutOfMemoryError时生成dump文件。-XX:HeapDumpPath 指定 dump 文件路径&lt;/p&gt;
+&lt;p&gt;这种方式获取的文件一般比较大几百兆吧,可以使用-dump:live选项只抓取当前存活的内存对象这样生成的 dump 文件会小一些&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;jmap -dump:live,format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;dump 文件就可以用一些工具查看例如 jhat visual vm mat&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
