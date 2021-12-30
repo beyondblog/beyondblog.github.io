@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
   
-  <title>Tags</title>
-  <meta property="og:title" content="Tags" />
-  <meta name="twitter:title" content="Tags" />
+  <title>beyondのblog</title>
+  <meta property="og:title" content="beyondのblog" />
+  <meta name="twitter:title" content="beyondのblog" />
   
 
   
@@ -17,7 +17,7 @@
 
   <meta name="author" content="beyondblog"/>
   <meta property="og:site_name" content="beyondのblog" />
-  <meta property="og:url" content="https://beyondblog.github.io/tags/" />
+  <meta property="og:url" content="https://beyondblog.github.io/" />
 
   
   <meta name="twitter:card" content="summary" />
@@ -41,6 +41,8 @@
   
   <link rel="stylesheet" href="https://beyondblog.github.io/css/custom.css">
   <link rel='icon' type='image/x-icon' href="https://beyondblog.github.io/path/to/favicon" />
+  <link href="https://beyondblog.github.io/index.xml" rel="alternate" type="application/rss+xml" title="beyondのblog" />
+  
   
   <script type="text/javascript" src="https://beyondblog.github.io/js/bundle.js"></script>
   
@@ -64,53 +66,90 @@
   <main id="main" class="l-main">
 
 
-<section>
-  <h2>Tags</h2>
-  <ul>
+
+  
+  <article class="c-article p-list-article">
+  <header>
+    <h2 class="c-title c-article__title"><a href="https://beyondblog.github.io/posts/gdb_debug_example/">使用GDB调试Go语言</a></h2>
+    <p class="c-article__meta">
+      Posted on
+<time datetime="2015-04-13T07:07:51&#43;08:00">
+  Apr 13, 2015
+</time>
+
+      
+         | Updated on
+<time datetime="2015-04-13T07:07:51&#43;08:00">
+  Apr 13, 2015
+</time>
+
+      
+      
+         | 977 words 
+
+      
+      
+         | 
+
+
+~5 mins
+
+
+      
+    </p>
+  </header>
+  <div class="c-article__summary">
+    用Go语言已经有一段时间了,总结一下如何用GDB来调试它!
+ps:网上有很多文章都有描述,但是都不是很全面,这里将那些方法汇总一下
+GDB简介 GDB是GNU开源组织发布的一个强大的UNIX下的程序调试工具。或许，各位比较喜欢那种图形界面方式的，像VC、BCB等IDE的调试，但如果你是在UNIX平台下做软件，你会发现GDB这个调试工具有比VC、BCB的图形化调试器更强大的功能。所谓“寸有所长，尺有所短”就是这个道理。  目前支持的语言 (GNU gdb (GDB) 7.8)
+进入 gdb之后输入 set language 可以查看支持的语言列表
+$ gdb (gdb) set language Requires an argument. Valid arguments are auto, local, unknown, ada, c, c++, asm, minimal, d, fortran, objective-c, go, java, modula-2, opencl, pascal. (gdb) 
+  </div>
+  
+  <a href="https://beyondblog.github.io/posts/gdb_debug_example/" class="c-article__btn p-list-article__btn">Read more</a>
+  
+</article>
+
+
+
+<nav class="c-pagination p-pagination">
+  <div class="c-pagination__ctrl">
+    <div class="c-pagination__newer">
+      
+      <a href="/page/3/">Newer</a>
+      
+    </div>
+    <div class="c-pagination__older">
+      
+    </div>
+  </div>
+  <span class="c-pagination__count p-pagination__count">Page 4 of 4</span>
+</nav>
+ 
+<aside class="p-author">
+  
+  <div class="c-avatar p-author__avatar">
+    <img alt="Author Avatar" src="/img/profile.png" />
+  </div>
+  
+  
+  <div class="p-author__body">
+    
+    <p class="c-title p-author__name ">beyondblog</p>
     
     
-    <li><a href="https://beyondblog.github.io/tags/.net">.net</a> (1)</li>
     
-    <li><a href="https://beyondblog.github.io/tags/antlr4">antlr4</a> (1)</li>
+    <p>
+      <a href="beyondblog@outlook.com">
+        Contact me
+      </a>
+    </p>
     
-    <li><a href="https://beyondblog.github.io/tags/ci">ci</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/consul">consul</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/docker">docker</a> (5)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/dump">dump</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/erc20">erc20</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/eth">eth</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/ethereum">ethereum</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/fabio">fabio</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/gdb">gdb</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/gitlab">gitlab</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/go">go</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/grafana">grafana</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/java">java</a> (2)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/k8s">k8s</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/kubernetes">kubernetes</a> (2)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/monitor">monitor</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/sql">sql</a> (1)</li>
-    
-    <li><a href="https://beyondblog.github.io/tags/telegraf">telegraf</a> (1)</li>
-    
-  </ul>
-</section>
+  </div>
+  
+</aside>
+
+
   </main>
   
 <nav class="l-nav p-menu">
