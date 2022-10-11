@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>docker on beyondのblog</title><link>https://beyondblog.github.io/tags/docker/</link><description>Recent content in docker on beyondのblog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate><atom:link href="https://beyondblog.github.io/tags/docker/atom.xml" rel="self" type="application/rss+xml"/><item><title>使用grafana + telegraf 快速搭建docker监控平台</title><link>https://beyondblog.github.io/posts/grafana_telegraf_docker/</link><pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate><guid>https://beyondblog.github.io/posts/grafana_telegraf_docker/</guid><description>&lt;p>&lt;img
+src="https://beyondblog.github.io/img/grafana-telegraf-system.png"
+alt="grafana-telegraf-system"
+loading="lazy"
+decoding="async"
+class="full-width"
+/>
+&lt;/p>
+&lt;p>&lt;a href="http://grafana.org">grafana&lt;/a> 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p>
+&lt;p>docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现&lt;/p>
+&lt;h2 id="telegrafhttpsdocsinfluxdatacomtelegrafv12">&lt;a href="https://docs.influxdata.com/telegraf/v1.2/">telegraf&lt;/a>&lt;/h2>
+&lt;p>telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
+等等 还支持第三方的服务)等众多优点&lt;/p></description></item><item><title>Centos 手动安装 Kubernetes</title><link>https://beyondblog.github.io/posts/manual_install_kubernetes/</link><pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate><guid>https://beyondblog.github.io/posts/manual_install_kubernetes/</guid><description>&lt;p>因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p>
+&lt;ul>
+&lt;li>查看rpm 安装脚本 rpm -qp &amp;ndash;scripts&lt;/li>
+&lt;li>查看rpm 包文件列表 rpm -qpR&lt;/li>
+&lt;li>按照yumdownloader 工具 yum -y install yum-utils &amp;amp; yumdownloader &amp;ndash;enablerepo=epel&lt;/li>
+&lt;li>从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li>
+&lt;li>提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li>
+&lt;/ul></description></item><item><title>.NET core for docker</title><link>https://beyondblog.github.io/posts/dotnet_core_for_docker/</link><pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate><guid>https://beyondblog.github.io/posts/dotnet_core_for_docker/</guid><description>&lt;p>本文描述下 .net core 在 docker 里面的玩法&lt;/p>
+&lt;p>首先按照&lt;a href="https://www.microsoft.com/net/core#docker">官方文档&lt;/a>先 拉取镜像&lt;/p>
+&lt;pre>&lt;code> docker pull microsoft/dotnet:latest
+&lt;/code>&lt;/pre>&lt;p>然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project&lt;/p>
+&lt;pre>&lt;code>dotnet new -t web
+&lt;/code>&lt;/pre>&lt;p>如果本地没有 dotnew 运行时可以docker run 一个&lt;/p>
+&lt;pre>&lt;code>docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/ microsoft/dotnet:latest
+&lt;/code>&lt;/pre></description></item><item><title>使用gitlab 进行持续集成</title><link>https://beyondblog.github.io/posts/gitlab_bot_ci/</link><pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate><guid>https://beyondblog.github.io/posts/gitlab_bot_ci/</guid><description>&lt;p>Gitlab Community Edition 有一套比较完善的&lt;a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md">自动构建系统&lt;/a> 以及非常多的&lt;a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md">hooks&lt;/a>(&lt;a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md">还有这个&lt;/a>) 加上&lt;a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md">trigger&lt;/a> 机制可以灵活的控制build任务&lt;/p>
+&lt;p>那么利用这些个接口我们可以弄一个简单的自动构建机器人来提高团队之间的开发效率&lt;/p>
+&lt;p>首先进入项目的Settting页面&lt;/p>
+&lt;p>&lt;img
+src="http://ww1.sinaimg.cn/large/74311666jw1f1q9twodw5j20j60h8acf.jpg"
+alt="add web hooks"
+loading="lazy"
+decoding="async"
+class="full-width"
+/>
+&lt;/p>
+&lt;p>这儿订阅 push 事件 comments事件 和 merge Request 事件。 如果有需要还可以开启https支持 然后填写一个url(这个就是自己实现的一个bot) 点击添加就好&lt;/p>
+&lt;p>然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）&lt;/p></description></item><item><title>kubernetes v1.0 指南</title><link>https://beyondblog.github.io/posts/k8s/</link><pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate><guid>https://beyondblog.github.io/posts/k8s/</guid><description>&lt;p>操作系统：&lt;/p>
+&lt;p>CentOS7&lt;/p>
+&lt;pre>&lt;code>$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+&lt;/code>&lt;/pre>&lt;p>Docker 版本&lt;/p>
+&lt;pre>&lt;code>$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+&lt;/code>&lt;/pre>&lt;p>kubernetes 版本&lt;/p>
+&lt;pre>&lt;code>$ kubectl version
+Client Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+Server Version: version.Info{Major:&amp;quot;1&amp;quot;, Minor:&amp;quot;0&amp;quot;, GitVersion:&amp;quot;v1.0.4&amp;quot;, GitCommit:&amp;quot;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;quot;, GitTreeState:&amp;quot;clean&amp;quot;}
+&lt;/code>&lt;/pre></description></item></channel></rss>

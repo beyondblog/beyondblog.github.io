@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dump on beyondのblog</title><link>https://beyondblog.github.io/tags/dump/</link><description>Recent content in dump on beyondのblog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 27 Jul 2016 08:07:10 +0800</lastBuildDate><atom:link href="https://beyondblog.github.io/tags/dump/atom.xml" rel="self" type="application/rss+xml"/><item><title>分析 heap dump 文件</title><link>https://beyondblog.github.io/posts/java_analysis_heap_dump/</link><pubDate>Wed, 27 Jul 2016 08:07:10 +0800</pubDate><guid>https://beyondblog.github.io/posts/java_analysis_heap_dump/</guid><description>&lt;p>分析 java 应用的一些问题可以获取 thread dump 来分析线程堆栈,但是分析线程不一定能找到问题这时候可以获取 heap dump 来进行下一步分析。&lt;/p>
+&lt;h3 id="获取-thread-dump-文件">获取 thread dump 文件&lt;/h3>
+&lt;pre>&lt;code>jstack &amp;lt;pid&amp;gt; &amp;gt; file.tdump
+&lt;/code>&lt;/pre>&lt;p>关于thread dump 的信息可以&lt;a href="http://jameswxx.iteye.com/blog/1041173">查看这里&lt;/a>&lt;/p>
+&lt;p>heap dump 是 jvm 针对某一时刻生成的一份『快照』按照特定的格式保存到磁盘上，文件包含了很多信息例如 对象信息(包括对象的实例个数、各种字段的值) 、类信息、线程调用栈等等&lt;/p>
+&lt;h3 id="手动获取-heap-dump-文件">手动获取 heap dump 文件&lt;/h3>
+&lt;pre>&lt;code>jmap -dump:format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code>&lt;/pre>&lt;h4 id="自动获取-heap-dump-文件">自动获取 heap dump 文件&lt;/h4>
+&lt;p>以Oracle JVM为例,在应用启动时配置相关的参数 -XX:+HeapDumpOnOutOfMemoryError，当应用抛出OutOfMemoryError时生成dump文件。-XX:HeapDumpPath 指定 dump 文件路径&lt;/p>
+&lt;p>这种方式获取的文件一般比较大几百兆吧,可以使用-dump:live选项只抓取当前存活的内存对象这样生成的 dump 文件会小一些&lt;/p>
+&lt;pre>&lt;code>jmap -dump:live,format=b,file=file.hprof &amp;lt;pid&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>dump 文件就可以用一些工具查看例如 jhat visual vm mat&lt;/p></description></item></channel></rss>

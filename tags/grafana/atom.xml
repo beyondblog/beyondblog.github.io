@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>grafana on beyondのblog</title><link>https://beyondblog.github.io/tags/grafana/</link><description>Recent content in grafana on beyondのblog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate><atom:link href="https://beyondblog.github.io/tags/grafana/atom.xml" rel="self" type="application/rss+xml"/><item><title>使用grafana + telegraf 快速搭建docker监控平台</title><link>https://beyondblog.github.io/posts/grafana_telegraf_docker/</link><pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate><guid>https://beyondblog.github.io/posts/grafana_telegraf_docker/</guid><description>&lt;p>&lt;img
+src="https://beyondblog.github.io/img/grafana-telegraf-system.png"
+alt="grafana-telegraf-system"
+loading="lazy"
+decoding="async"
+class="full-width"
+/>
+&lt;/p>
+&lt;p>&lt;a href="http://grafana.org">grafana&lt;/a> 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p>
+&lt;p>docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现&lt;/p>
+&lt;h2 id="telegrafhttpsdocsinfluxdatacomtelegrafv12">&lt;a href="https://docs.influxdata.com/telegraf/v1.2/">telegraf&lt;/a>&lt;/h2>
+&lt;p>telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
+等等 还支持第三方的服务)等众多优点&lt;/p></description></item></channel></rss>
