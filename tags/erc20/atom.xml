@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Erc20 on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/erc20/</link>
+    <description>Recent content in Erc20 on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 25 Dec 2021 15:05:57 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/erc20/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>同步以太坊的ERC20所有账户的余额</title>
+      <link>https://beyondblog.github.io/posts/synct_erc20_balance/</link>
+      <pubDate>Sat, 25 Dec 2021 15:05:57 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/synct_erc20_balance/</guid>
+      <description>&lt;p&gt;以太坊的&lt;a href=&#34;https://ethereum.org/zh/developers/docs/accounts/&#34;&gt;账户&lt;/a&gt;分为外部账户和合约账户, 其中账户的资产又分为 原生币(平台币)ETH、和其他&lt;a href=&#34;https://ethereum.org/zh/developers/docs/standards/tokens/erc-20/&#34;&gt;ERC标准的代币&lt;/a&gt;。&lt;/p&gt;&#xA;&lt;p&gt;按照ERC20的标准,很容易查询到当前一个账户持有某一个代币的余额(调用balanceOf方法),&#xA;但是如果想知道一个账户持有了多少个币分别持有了多少数量,这个就不是很容易在链上查了。&lt;/p&gt;&#xA;&lt;p&gt;例如 etherscan.io 中的代币列表&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://beyondblog.github.io/img/erc_balance.png&#34; alt=&#34;balance&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;所以为了获取这个列表对应的关系, 需要把链上的数据“跑一遍”&lt;/p&gt;&#xA;&lt;h1 id=&#34;如何构建所有账户的代币余额帐本&#34;&gt;如何构建所有账户的代币余额帐本?&lt;/h1&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;可以收集所有的转账(Transfer)事件, 根据事件中的交易参数做加减,从而算出每个地址的余额情况&lt;/p&gt;&#xA;&lt;p&gt;例如&#xA;捕获到 Transfer 事件, 能获取到转账人、接收人、转账数量、转那个币&#xA;这个时候按照币的维度,给转账人扣除对应的数量，接收人增加上对应的数量即可&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;不过这儿有几个问题, 一些合约虽然发出了Transafer 事件但是并没有实际扣除金额(这种其实不符合ERC20规范了),另外就是有一些合约初始化的时候就分配了代币给指定的地址,所以得到的数据可能不准确&lt;/p&gt;&#xA;&lt;ol start=&#34;2&#34;&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;收集所有的转账事件, 根据事件中的地址实时去同步下余额&lt;/p&gt;&#xA;&lt;p&gt;例如每次解析Transfer 事件, 每次把 转账人、接收人的余额实时同步一下, 这样得到的结果就很准确了.&#xA;可以做一些性能上的优化,比如去重复的(布隆过滤器), 使用multicall 批量更新&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h1 id=&#34;如何获取到所有的转账事件&#34;&gt;如何获取到所有的转账事件？&lt;/h1&gt;&#xA;&lt;p&gt;可以使用 &lt;a href=&#34;https://github.com/blockchain-etl/ethereum-etl&#34;&gt;ethereum-etl&lt;/a&gt; 同步指定的事件, 可以指定获取 token_transfers 事件&lt;/p&gt;&#xA;&lt;p&gt;截止到目前链上大约1400w个区块,大概一周的事件能更新完.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

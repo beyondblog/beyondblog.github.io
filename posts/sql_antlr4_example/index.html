@@ -1,0 +1,580 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>使用antlr4 解析sql语句 - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+
+
+在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+
+
+实现自定义的Visitor
+
+
+解析 table name, colume, comment 生成GraphQL 的定义
+
+
+效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL COMMENT &#39;用户名称&#39;,
+  `type` tinyint DEFAULT NULL COMMENT &#39;类型: xxxxxxxx&#39;,
+  `note` varchar(200) DEFAULT NULL COMMENT &#39;备注&#39;,
+  `status` tinyint NOT NULL DEFAULT &#39;1&#39; COMMENT &#39;0-禁用 1-启用 2-删除&#39;,
+  `create_time` bigint DEFAULT NULL  COMMENT &#39;创建时间&#39;,
+  `update_time` bigint DEFAULT NULL COMMENT &#39;修改时间&#39;,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT=&#39;用户&#39;
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `id`
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `name`
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `type`
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `note`
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `status`
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `create_time`
+[main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `update_time`
+[main] INFO com.beyondblog.Main - (ddlStatement (createTable CREATE TABLE (tableName (fullId (uid (simpleId (engineName `Users`))))) (createDefinitions ( (createDefinition (uid (simpleId (engineName `id`))) (columnDefinition (dataType bigint unsigned) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint AUTO_INCREMENT))) , (createDefinition (uid (simpleId (engineName `name`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 100) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;用户名称&#39;))) , (createDefinition (uid (simpleId (engineName `type`))) (columnDefinition (dataType tinyint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;类型: xxxxxxxx&#39;))) , (createDefinition (uid (simpleId (engineName `note`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 200) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;备注&#39;))) , (createDefinition (uid (simpleId (engineName `status`))) (columnDefinition (dataType tinyint) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint DEFAULT (defaultValue (constant (stringLiteral &#39;1&#39;)))) (columnConstraint COMMENT &#39;0-禁用 1-启用 2-删除&#39;))) , (createDefinition (uid (simpleId (engineName `create_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;创建时间&#39;))) , (createDefinition (uid (simpleId (engineName `update_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;修改时间&#39;))) , (createDefinition (tableConstraint PRIMARY KEY (indexColumnNames ( (indexColumnName (uid (simpleId (engineName `id`)))) )))) )) (tableOption ENGINE = (engineName InnoDB)) (tableOption COMMENT = &#39;用户&#39;)))
+[main] INFO com.beyondblog.Main - 结果如下:
+[main] INFO com.beyondblog.Main - 类型为: Users
+[main] INFO com.beyondblog.Main - 	 字段名: id, 类型: Int, 是否必须: true
+[main] INFO com.beyondblog.Main - 	 字段名: name, 类型: String, 是否必须: false
+[main] INFO com.beyondblog.Main - 	 字段名: type, 类型: Int, 是否必须: false
+[main] INFO com.beyondblog.Main - 	 字段名: note, 类型: String, 是否必须: false
+[main] INFO com.beyondblog.Main - 	 字段名: status, 类型: Int, 是否必须: true
+[main] INFO com.beyondblog.Main - 	 字段名: create_time, 类型: Int, 是否必须: false
+[main] INFO com.beyondblog.Main - 	 字段名: update_time, 类型: Int, 是否必须: false
+[main] INFO com.beyondblog.Main - 
+# 用户
+type Users {
+	id: Int
+	# 用户名称
+	name: String
+	# 类型: xxxxxxxx
+	type: Int
+	# 备注
+	note: String
+	# 0-禁用 1-启用 2-删除
+	status: Int
+	# 创建时间
+	createTime: Int
+	# 修改时间
+	updateTime: Int
+}
+解析的主要逻辑" />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="使用antlr4 解析sql语句">
+  <meta itemprop="description" content="最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+实现自定义的Visitor
+解析 table name, colume, comment 生成GraphQL 的定义
+效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(100) DEFAULT NULL COMMENT &#39;用户名称&#39;, `type` tinyint DEFAULT NULL COMMENT &#39;类型: xxxxxxxx&#39;, `note` varchar(200) DEFAULT NULL COMMENT &#39;备注&#39;, `status` tinyint NOT NULL DEFAULT &#39;1&#39; COMMENT &#39;0-禁用 1-启用 2-删除&#39;, `create_time` bigint DEFAULT NULL COMMENT &#39;创建时间&#39;, `update_time` bigint DEFAULT NULL COMMENT &#39;修改时间&#39;, PRIMARY KEY (`id`) ) ENGINE=InnoDB COMMENT=&#39;用户&#39; [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `id` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `name` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `type` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `note` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `status` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `create_time` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `update_time` [main] INFO com.beyondblog.Main - (ddlStatement (createTable CREATE TABLE (tableName (fullId (uid (simpleId (engineName `Users`))))) (createDefinitions ( (createDefinition (uid (simpleId (engineName `id`))) (columnDefinition (dataType bigint unsigned) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint AUTO_INCREMENT))) , (createDefinition (uid (simpleId (engineName `name`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 100) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;用户名称&#39;))) , (createDefinition (uid (simpleId (engineName `type`))) (columnDefinition (dataType tinyint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;类型: xxxxxxxx&#39;))) , (createDefinition (uid (simpleId (engineName `note`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 200) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;备注&#39;))) , (createDefinition (uid (simpleId (engineName `status`))) (columnDefinition (dataType tinyint) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint DEFAULT (defaultValue (constant (stringLiteral &#39;1&#39;)))) (columnConstraint COMMENT &#39;0-禁用 1-启用 2-删除&#39;))) , (createDefinition (uid (simpleId (engineName `create_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;创建时间&#39;))) , (createDefinition (uid (simpleId (engineName `update_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;修改时间&#39;))) , (createDefinition (tableConstraint PRIMARY KEY (indexColumnNames ( (indexColumnName (uid (simpleId (engineName `id`)))) )))) )) (tableOption ENGINE = (engineName InnoDB)) (tableOption COMMENT = &#39;用户&#39;))) [main] INFO com.beyondblog.Main - 结果如下: [main] INFO com.beyondblog.Main - 类型为: Users [main] INFO com.beyondblog.Main - 字段名: id, 类型: Int, 是否必须: true [main] INFO com.beyondblog.Main - 字段名: name, 类型: String, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: type, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: note, 类型: String, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: status, 类型: Int, 是否必须: true [main] INFO com.beyondblog.Main - 字段名: create_time, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: update_time, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - # 用户 type Users { id: Int # 用户名称 name: String # 类型: xxxxxxxx type: Int # 备注 note: String # 0-禁用 1-启用 2-删除 status: Int # 创建时间 createTime: Int # 修改时间 updateTime: Int } 解析的主要逻辑">
+  <meta itemprop="datePublished" content="2020-12-09T08:10:46+08:00">
+  <meta itemprop="dateModified" content="2020-12-09T08:10:46+08:00">
+  <meta itemprop="wordCount" content="565">
+  <meta itemprop="keywords" content="Java,Sql,Antlr4">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/sql_antlr4_example/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="使用antlr4 解析sql语句">
+  <meta property="og:description" content="最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+实现自定义的Visitor
+解析 table name, colume, comment 生成GraphQL 的定义
+效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(100) DEFAULT NULL COMMENT &#39;用户名称&#39;, `type` tinyint DEFAULT NULL COMMENT &#39;类型: xxxxxxxx&#39;, `note` varchar(200) DEFAULT NULL COMMENT &#39;备注&#39;, `status` tinyint NOT NULL DEFAULT &#39;1&#39; COMMENT &#39;0-禁用 1-启用 2-删除&#39;, `create_time` bigint DEFAULT NULL COMMENT &#39;创建时间&#39;, `update_time` bigint DEFAULT NULL COMMENT &#39;修改时间&#39;, PRIMARY KEY (`id`) ) ENGINE=InnoDB COMMENT=&#39;用户&#39; [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `id` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `name` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `type` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `note` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `status` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `create_time` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `update_time` [main] INFO com.beyondblog.Main - (ddlStatement (createTable CREATE TABLE (tableName (fullId (uid (simpleId (engineName `Users`))))) (createDefinitions ( (createDefinition (uid (simpleId (engineName `id`))) (columnDefinition (dataType bigint unsigned) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint AUTO_INCREMENT))) , (createDefinition (uid (simpleId (engineName `name`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 100) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;用户名称&#39;))) , (createDefinition (uid (simpleId (engineName `type`))) (columnDefinition (dataType tinyint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;类型: xxxxxxxx&#39;))) , (createDefinition (uid (simpleId (engineName `note`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 200) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;备注&#39;))) , (createDefinition (uid (simpleId (engineName `status`))) (columnDefinition (dataType tinyint) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint DEFAULT (defaultValue (constant (stringLiteral &#39;1&#39;)))) (columnConstraint COMMENT &#39;0-禁用 1-启用 2-删除&#39;))) , (createDefinition (uid (simpleId (engineName `create_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;创建时间&#39;))) , (createDefinition (uid (simpleId (engineName `update_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;修改时间&#39;))) , (createDefinition (tableConstraint PRIMARY KEY (indexColumnNames ( (indexColumnName (uid (simpleId (engineName `id`)))) )))) )) (tableOption ENGINE = (engineName InnoDB)) (tableOption COMMENT = &#39;用户&#39;))) [main] INFO com.beyondblog.Main - 结果如下: [main] INFO com.beyondblog.Main - 类型为: Users [main] INFO com.beyondblog.Main - 字段名: id, 类型: Int, 是否必须: true [main] INFO com.beyondblog.Main - 字段名: name, 类型: String, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: type, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: note, 类型: String, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: status, 类型: Int, 是否必须: true [main] INFO com.beyondblog.Main - 字段名: create_time, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: update_time, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - # 用户 type Users { id: Int # 用户名称 name: String # 类型: xxxxxxxx type: Int # 备注 note: String # 0-禁用 1-启用 2-删除 status: Int # 创建时间 createTime: Int # 修改时间 updateTime: Int } 解析的主要逻辑">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-12-09T08:10:46+08:00">
+    <meta property="article:modified_time" content="2020-12-09T08:10:46+08:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="Sql">
+    <meta property="article:tag" content="Antlr4">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="使用antlr4 解析sql语句">
+  <meta name="twitter:description" content="最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法
+在这个仓库 https://github.com/antlr/grammars-v4 找到对应的语法定义文件
+实现自定义的Visitor
+解析 table name, colume, comment 生成GraphQL 的定义
+效果如下
+[main] INFO com.beyondblog.Main - sql: CREATE TABLE `Users` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(100) DEFAULT NULL COMMENT &#39;用户名称&#39;, `type` tinyint DEFAULT NULL COMMENT &#39;类型: xxxxxxxx&#39;, `note` varchar(200) DEFAULT NULL COMMENT &#39;备注&#39;, `status` tinyint NOT NULL DEFAULT &#39;1&#39; COMMENT &#39;0-禁用 1-启用 2-删除&#39;, `create_time` bigint DEFAULT NULL COMMENT &#39;创建时间&#39;, `update_time` bigint DEFAULT NULL COMMENT &#39;修改时间&#39;, PRIMARY KEY (`id`) ) ENGINE=InnoDB COMMENT=&#39;用户&#39; [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `id` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `name` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `type` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `note` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `status` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `create_time` [main] INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 `update_time` [main] INFO com.beyondblog.Main - (ddlStatement (createTable CREATE TABLE (tableName (fullId (uid (simpleId (engineName `Users`))))) (createDefinitions ( (createDefinition (uid (simpleId (engineName `id`))) (columnDefinition (dataType bigint unsigned) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint AUTO_INCREMENT))) , (createDefinition (uid (simpleId (engineName `name`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 100) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;用户名称&#39;))) , (createDefinition (uid (simpleId (engineName `type`))) (columnDefinition (dataType tinyint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;类型: xxxxxxxx&#39;))) , (createDefinition (uid (simpleId (engineName `note`))) (columnDefinition (dataType varchar (lengthOneDimension ( (decimalLiteral 200) ))) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;备注&#39;))) , (createDefinition (uid (simpleId (engineName `status`))) (columnDefinition (dataType tinyint) (columnConstraint (nullNotnull NOT NULL)) (columnConstraint DEFAULT (defaultValue (constant (stringLiteral &#39;1&#39;)))) (columnConstraint COMMENT &#39;0-禁用 1-启用 2-删除&#39;))) , (createDefinition (uid (simpleId (engineName `create_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;创建时间&#39;))) , (createDefinition (uid (simpleId (engineName `update_time`))) (columnDefinition (dataType bigint) (columnConstraint DEFAULT (defaultValue NULL)) (columnConstraint COMMENT &#39;修改时间&#39;))) , (createDefinition (tableConstraint PRIMARY KEY (indexColumnNames ( (indexColumnName (uid (simpleId (engineName `id`)))) )))) )) (tableOption ENGINE = (engineName InnoDB)) (tableOption COMMENT = &#39;用户&#39;))) [main] INFO com.beyondblog.Main - 结果如下: [main] INFO com.beyondblog.Main - 类型为: Users [main] INFO com.beyondblog.Main - 字段名: id, 类型: Int, 是否必须: true [main] INFO com.beyondblog.Main - 字段名: name, 类型: String, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: type, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: note, 类型: String, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: status, 类型: Int, 是否必须: true [main] INFO com.beyondblog.Main - 字段名: create_time, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - 字段名: update_time, 类型: Int, 是否必须: false [main] INFO com.beyondblog.Main - # 用户 type Users { id: Int # 用户名称 name: String # 类型: xxxxxxxx type: Int # 备注 note: String # 0-禁用 1-启用 2-删除 status: Int # 创建时间 createTime: Int # 修改时间 updateTime: Int } 解析的主要逻辑">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/sql_antlr4_example/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">使用antlr4 解析sql语句</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Dec 9, 2020</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>最近写了一个SQL DML 转换 GraphQL 的小工具, 记录一下使用antlr4 解析 sql语句的方法</p>
+<ol>
+<li>
+<p>在这个仓库 <a href="https://github.com/antlr/grammars-v4">https://github.com/antlr/grammars-v4</a> 找到对应的语法定义文件</p>
+</li>
+<li>
+<p>实现自定义的Visitor</p>
+</li>
+<li>
+<p>解析 table name, colume, comment 生成GraphQL 的定义</p>
+</li>
+</ol>
+<p>效果如下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - sql: CREATE TABLE <span style="color:#e6db74">`</span>Users<span style="color:#e6db74">`</span> <span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>id<span style="color:#e6db74">`</span> bigint unsigned NOT NULL AUTO_INCREMENT,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>name<span style="color:#e6db74">`</span> varchar<span style="color:#f92672">(</span>100<span style="color:#f92672">)</span> DEFAULT NULL COMMENT <span style="color:#e6db74">&#39;用户名称&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>type<span style="color:#e6db74">`</span> tinyint DEFAULT NULL COMMENT <span style="color:#e6db74">&#39;类型: xxxxxxxx&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>note<span style="color:#e6db74">`</span> varchar<span style="color:#f92672">(</span>200<span style="color:#f92672">)</span> DEFAULT NULL COMMENT <span style="color:#e6db74">&#39;备注&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>status<span style="color:#e6db74">`</span> tinyint NOT NULL DEFAULT <span style="color:#e6db74">&#39;1&#39;</span> COMMENT <span style="color:#e6db74">&#39;0-禁用 1-启用 2-删除&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>create_time<span style="color:#e6db74">`</span> bigint DEFAULT NULL  COMMENT <span style="color:#e6db74">&#39;创建时间&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">`</span>update_time<span style="color:#e6db74">`</span> bigint DEFAULT NULL COMMENT <span style="color:#e6db74">&#39;修改时间&#39;</span>,
+</span></span><span style="display:flex;"><span>  PRIMARY KEY <span style="color:#f92672">(</span><span style="color:#e6db74">`</span>id<span style="color:#e6db74">`</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span> ENGINE<span style="color:#f92672">=</span>InnoDB COMMENT<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;用户&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>id<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>name<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>type<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>note<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>status<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>create_time<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.MySqlParserSelectVisitor - 解析字段定义 <span style="color:#e6db74">`</span>update_time<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - <span style="color:#f92672">(</span>ddlStatement <span style="color:#f92672">(</span>createTable CREATE TABLE <span style="color:#f92672">(</span>tableName <span style="color:#f92672">(</span>fullId <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>Users<span style="color:#e6db74">`</span><span style="color:#f92672">)))))</span> <span style="color:#f92672">(</span>createDefinitions <span style="color:#f92672">(</span> <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>id<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType bigint unsigned<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>columnConstraint <span style="color:#f92672">(</span>nullNotnull NOT NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint AUTO_INCREMENT<span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>name<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType varchar <span style="color:#f92672">(</span>lengthOneDimension <span style="color:#f92672">(</span> <span style="color:#f92672">(</span>decimalLiteral 100<span style="color:#f92672">)</span> <span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnConstraint DEFAULT <span style="color:#f92672">(</span>defaultValue NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint COMMENT <span style="color:#e6db74">&#39;用户名称&#39;</span><span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>type<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType tinyint<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>columnConstraint DEFAULT <span style="color:#f92672">(</span>defaultValue NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint COMMENT <span style="color:#e6db74">&#39;类型: xxxxxxxx&#39;</span><span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>note<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType varchar <span style="color:#f92672">(</span>lengthOneDimension <span style="color:#f92672">(</span> <span style="color:#f92672">(</span>decimalLiteral 200<span style="color:#f92672">)</span> <span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnConstraint DEFAULT <span style="color:#f92672">(</span>defaultValue NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint COMMENT <span style="color:#e6db74">&#39;备注&#39;</span><span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>status<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType tinyint<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>columnConstraint <span style="color:#f92672">(</span>nullNotnull NOT NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint DEFAULT <span style="color:#f92672">(</span>defaultValue <span style="color:#f92672">(</span>constant <span style="color:#f92672">(</span>stringLiteral <span style="color:#e6db74">&#39;1&#39;</span><span style="color:#f92672">))))</span> <span style="color:#f92672">(</span>columnConstraint COMMENT <span style="color:#e6db74">&#39;0-禁用 1-启用 2-删除&#39;</span><span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>create_time<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType bigint<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>columnConstraint DEFAULT <span style="color:#f92672">(</span>defaultValue NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint COMMENT <span style="color:#e6db74">&#39;创建时间&#39;</span><span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>update_time<span style="color:#e6db74">`</span><span style="color:#f92672">)))</span> <span style="color:#f92672">(</span>columnDefinition <span style="color:#f92672">(</span>dataType bigint<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>columnConstraint DEFAULT <span style="color:#f92672">(</span>defaultValue NULL<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>columnConstraint COMMENT <span style="color:#e6db74">&#39;修改时间&#39;</span><span style="color:#f92672">)))</span> , <span style="color:#f92672">(</span>createDefinition <span style="color:#f92672">(</span>tableConstraint PRIMARY KEY <span style="color:#f92672">(</span>indexColumnNames <span style="color:#f92672">(</span> <span style="color:#f92672">(</span>indexColumnName <span style="color:#f92672">(</span>uid <span style="color:#f92672">(</span>simpleId <span style="color:#f92672">(</span>engineName <span style="color:#e6db74">`</span>id<span style="color:#e6db74">`</span><span style="color:#f92672">))))</span> <span style="color:#f92672">))))</span> <span style="color:#f92672">))</span> <span style="color:#f92672">(</span>tableOption ENGINE <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>engineName InnoDB<span style="color:#f92672">))</span> <span style="color:#f92672">(</span>tableOption COMMENT <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;用户&#39;</span><span style="color:#f92672">)))</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 结果如下:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 类型为: Users
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: id, 类型: Int, 是否必须: true
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: name, 类型: String, 是否必须: false
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: type, 类型: Int, 是否必须: false
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: note, 类型: String, 是否必须: false
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: status, 类型: Int, 是否必须: true
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: create_time, 类型: Int, 是否必须: false
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 	 字段名: update_time, 类型: Int, 是否必须: false
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main<span style="color:#f92672">]</span> INFO com.beyondblog.Main - 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 用户</span>
+</span></span><span style="display:flex;"><span>type Users <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	id: Int
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 用户名称</span>
+</span></span><span style="display:flex;"><span>	name: String
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 类型: xxxxxxxx</span>
+</span></span><span style="display:flex;"><span>	type: Int
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 备注</span>
+</span></span><span style="display:flex;"><span>	note: String
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 0-禁用 1-启用 2-删除</span>
+</span></span><span style="display:flex;"><span>	status: Int
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 创建时间</span>
+</span></span><span style="display:flex;"><span>	createTime: Int
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 修改时间</span>
+</span></span><span style="display:flex;"><span>	updateTime: Int
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>解析的主要逻辑</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#a6e22e">@Slf4j</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MySqlParserSelectVisitor</span> <span style="color:#66d9ef">extends</span> MySqlParserBaseVisitor<span style="color:#f92672">&lt;</span>Void<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> GraphQLType graphQLType;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">MySqlParserSelectVisitor</span>(GraphQLType graphQLType) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">graphQLType</span> <span style="color:#f92672">=</span> graphQLType;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">visitTableOptionComment</span>(MySqlParser.<span style="color:#a6e22e">TableOptionCommentContext</span> ctx) {
+</span></span><span style="display:flex;"><span>        graphQLType.<span style="color:#a6e22e">setDescription</span>(getText(ctx.<span style="color:#a6e22e">getChild</span>(ctx.<span style="color:#a6e22e">getChildCount</span>() <span style="color:#f92672">-</span> 1)));
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> visitChildren(ctx);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">visitDdlStatement</span>(MySqlParser.<span style="color:#a6e22e">DdlStatementContext</span> ctx) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">super</span>.<span style="color:#a6e22e">visitDdlStatement</span>(ctx);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">visitTableName</span>(MySqlParser.<span style="color:#a6e22e">TableNameContext</span> ctx) {
+</span></span><span style="display:flex;"><span>        graphQLType.<span style="color:#a6e22e">setTypeName</span>(getText(ctx));
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> visitChildren(ctx);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">visitColumnDeclaration</span>(MySqlParser.<span style="color:#a6e22e">ColumnDeclarationContext</span> ctx) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        log.<span style="color:#a6e22e">info</span>(<span style="color:#e6db74">&#34;解析字段定义 {}&#34;</span>, ctx.<span style="color:#a6e22e">uid</span>().<span style="color:#a6e22e">getText</span>());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        GraphQLField graphQLField <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> GraphQLField();
+</span></span><span style="display:flex;"><span>        graphQLField.<span style="color:#a6e22e">setSourceFieldName</span>(getText(ctx.<span style="color:#a6e22e">uid</span>()));
+</span></span><span style="display:flex;"><span>        graphQLField.<span style="color:#a6e22e">setFieldName</span>(getText(ctx.<span style="color:#a6e22e">uid</span>()));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> columnConstraint <span style="color:#f92672">=</span> ctx.<span style="color:#a6e22e">columnDefinition</span>().<span style="color:#a6e22e">columnConstraint</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> dataType <span style="color:#f92672">=</span> ctx.<span style="color:#a6e22e">columnDefinition</span>().<span style="color:#a6e22e">dataType</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (dataType <span style="color:#66d9ef">instanceof</span> MySqlParser.<span style="color:#a6e22e">StringDataTypeContext</span>) {
+</span></span><span style="display:flex;"><span>            graphQLField.<span style="color:#a6e22e">setType</span>(<span style="color:#e6db74">&#34;String&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (dataType <span style="color:#66d9ef">instanceof</span> MySqlParser.<span style="color:#a6e22e">DimensionDataTypeContext</span>) {
+</span></span><span style="display:flex;"><span>            graphQLField.<span style="color:#a6e22e">setType</span>(<span style="color:#e6db74">&#34;Int&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            log.<span style="color:#a6e22e">warn</span>(<span style="color:#e6db74">&#34;未知类型&#34;</span>);
+</span></span><span style="display:flex;"><span>            graphQLField.<span style="color:#a6e22e">setType</span>(<span style="color:#e6db74">&#34;String&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> constraint : columnConstraint) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (constraint <span style="color:#66d9ef">instanceof</span> MySqlParser.<span style="color:#a6e22e">CommentColumnConstraintContext</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">var</span> comment <span style="color:#f92672">=</span> getText(((MySqlParser.<span style="color:#a6e22e">CommentColumnConstraintContext</span>) constraint).<span style="color:#a6e22e">STRING_LITERAL</span>());
+</span></span><span style="display:flex;"><span>                graphQLField.<span style="color:#a6e22e">setDescription</span>(comment);
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (constraint <span style="color:#66d9ef">instanceof</span> MySqlParser.<span style="color:#a6e22e">NullColumnConstraintContext</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (((MySqlParser.<span style="color:#a6e22e">NullColumnConstraintContext</span>) constraint).<span style="color:#a6e22e">nullNotnull</span>().<span style="color:#a6e22e">NOT</span>() <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>                    graphQLField.<span style="color:#a6e22e">setRequired</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">graphQLType</span>.<span style="color:#a6e22e">addField</span>(graphQLField);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">super</span>.<span style="color:#a6e22e">visitColumnDeclaration</span>(ctx);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> String <span style="color:#a6e22e">getText</span>(ParseTree ctx) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (ctx.<span style="color:#a6e22e">getText</span>() <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ctx.<span style="color:#a6e22e">getText</span>().<span style="color:#a6e22e">replaceAll</span>(<span style="color:#e6db74">&#34;`&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>).<span style="color:#a6e22e">replaceAll</span>(<span style="color:#e6db74">&#34;&#39;&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/java"
+      >java</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/sql"
+      >sql</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/antlr4"
+      >antlr4</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/synct_erc20_balance/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>同步以太坊的ERC20所有账户的余额</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/grafana_telegraf_docker/"
+      ><span>使用grafana &#43; telegraf 快速搭建docker监控平台</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

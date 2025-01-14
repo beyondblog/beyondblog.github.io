@@ -1,0 +1,421 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Centos 手动安装 Kubernetes - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。
+
+查看rpm 安装脚本   rpm -qp &ndash;scripts
+查看rpm 包文件列表 rpm -qpR
+按照yumdownloader 工具  yum -y install yum-utils &amp;  yumdownloader &ndash;enablerepo=epel
+从 yum 源下载 rpm 包 yumdownloader kubernetes-node
+提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv
+" />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="Centos 手动安装 Kubernetes">
+  <meta itemprop="description" content="因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突 所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。
+查看rpm 安装脚本 rpm -qp –scripts 查看rpm 包文件列表 rpm -qpR 按照yumdownloader 工具 yum -y install yum-utils &amp; yumdownloader –enablerepo=epel 从 yum 源下载 rpm 包 yumdownloader kubernetes-node 提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv ">
+  <meta itemprop="datePublished" content="2016-08-25T08:10:46+08:00">
+  <meta itemprop="dateModified" content="2016-08-25T08:10:46+08:00">
+  <meta itemprop="wordCount" content="112">
+  <meta itemprop="keywords" content="Kubernetes,Docker,K8s">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/manual_install_kubernetes/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="Centos 手动安装 Kubernetes">
+  <meta property="og:description" content="因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突 所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。
+查看rpm 安装脚本 rpm -qp –scripts 查看rpm 包文件列表 rpm -qpR 按照yumdownloader 工具 yum -y install yum-utils &amp; yumdownloader –enablerepo=epel 从 yum 源下载 rpm 包 yumdownloader kubernetes-node 提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv ">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2016-08-25T08:10:46+08:00">
+    <meta property="article:modified_time" content="2016-08-25T08:10:46+08:00">
+    <meta property="article:tag" content="Kubernetes">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="K8s">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Centos 手动安装 Kubernetes">
+  <meta name="twitter:description" content="因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突 所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。
+查看rpm 安装脚本 rpm -qp –scripts 查看rpm 包文件列表 rpm -qpR 按照yumdownloader 工具 yum -y install yum-utils &amp; yumdownloader –enablerepo=epel 从 yum 源下载 rpm 包 yumdownloader kubernetes-node 提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv ">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/manual_install_kubernetes/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Centos 手动安装 Kubernetes</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Aug 25, 2016</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突
+所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。</p>
+<ul>
+<li>查看rpm 安装脚本   rpm -qp &ndash;scripts</li>
+<li>查看rpm 包文件列表 rpm -qpR</li>
+<li>按照yumdownloader 工具  yum -y install yum-utils &amp;  yumdownloader &ndash;enablerepo=epel</li>
+<li>从 yum 源下载 rpm 包 yumdownloader kubernetes-node</li>
+<li>提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv</li>
+</ul>
+<p>然后 rpm 包里面的文件都在当前文件夹下面 按照目录结构复制过去,其实大致的步骤如下（以安装 node 节点为例）:</p>
+<p>添加一个 kube 组用户</p>
+<pre tabindex="0"><code>getent group kube &gt;/dev/null || groupadd -r kube
+getent passwd kube &gt;/dev/null || useradd -r -g kube -d -s /sbin/nologin -c &#34;Kubernetes user&#34; kube
+</code></pre><p>复制配置文件到 /etc/kubernetes/目录下</p>
+<p>建立kubelet 目录</p>
+<pre tabindex="0"><code>mkdir -p /var/lib/kubelet 
+</code></pre><p>建立 /var/run/kubernetes 目录</p>
+<pre tabindex="0"><code>mkdir -p /var/run/kubernetes
+chown  -R kube:kube /var/run/kubernetes
+</code></pre><p>复制二进制文件</p>
+<pre tabindex="0"><code> cp hyperkube /usr/bin/
+ cp kubelet kube-proxy /usr/bin/
+ 
+</code></pre><p>复制 kubelet.service  kube-proxy.service 文件</p>
+<pre tabindex="0"><code>cp kubelet.service kube-proxy.service /usr/lib/systemd/system/
+</code></pre><p>重新 reload 下服务单元</p>
+<pre tabindex="0"><code>systemctl daemon-reload
+</code></pre></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/kubernetes"
+      >kubernetes</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/docker"
+      >docker</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/k8s"
+      >k8s</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/grafana_telegraf_docker/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用grafana &#43; telegraf 快速搭建docker监控平台</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/dotnet_core_for_docker/"
+      ><span>.NET core for docker</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

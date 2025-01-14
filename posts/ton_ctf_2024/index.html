@@ -1,0 +1,671 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>TON CTF 2024 Writeup - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="
+This article is a write-up of the TON CTF 2024 competition that I participated in with Leo. The TON CTF was sponsored by the TON Foundation and organized by Tonbit and TONX Studio. The competition encompassed multiple challenges related to the TON blockchain, all written in the Tact language. Tact is a high-level language that compiles to Func, which is then compiled to Fift, ultimately generating bytecode suitable for the TON virtual machine. This competition allowed me to gain a deeper understanding of the uniqueness of the TON ecosystem and its programming model." />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="TON CTF 2024 Writeup">
+  <meta itemprop="description" content="
+This article is a write-up of the TON CTF 2024 competition that I participated in with Leo. The TON CTF was sponsored by the TON Foundation and organized by Tonbit and TONX Studio. The competition encompassed multiple challenges related to the TON blockchain, all written in the Tact language. Tact is a high-level language that compiles to Func, which is then compiled to Fift, ultimately generating bytecode suitable for the TON virtual machine. This competition allowed me to gain a deeper understanding of the uniqueness of the TON ecosystem and its programming model.">
+  <meta itemprop="datePublished" content="2024-10-13T12:03:51+08:00">
+  <meta itemprop="dateModified" content="2024-10-13T12:03:51+08:00">
+  <meta itemprop="wordCount" content="1956">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/ton_ctf_2024/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="TON CTF 2024 Writeup">
+  <meta property="og:description" content="
+This article is a write-up of the TON CTF 2024 competition that I participated in with Leo. The TON CTF was sponsored by the TON Foundation and organized by Tonbit and TONX Studio. The competition encompassed multiple challenges related to the TON blockchain, all written in the Tact language. Tact is a high-level language that compiles to Func, which is then compiled to Fift, ultimately generating bytecode suitable for the TON virtual machine. This competition allowed me to gain a deeper understanding of the uniqueness of the TON ecosystem and its programming model.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-10-13T12:03:51+08:00">
+    <meta property="article:modified_time" content="2024-10-13T12:03:51+08:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="TON CTF 2024 Writeup">
+  <meta name="twitter:description" content="
+This article is a write-up of the TON CTF 2024 competition that I participated in with Leo. The TON CTF was sponsored by the TON Foundation and organized by Tonbit and TONX Studio. The competition encompassed multiple challenges related to the TON blockchain, all written in the Tact language. Tact is a high-level language that compiles to Func, which is then compiled to Fift, ultimately generating bytecode suitable for the TON virtual machine. This competition allowed me to gain a deeper understanding of the uniqueness of the TON ecosystem and its programming model.">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/ton_ctf_2024/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">TON CTF 2024 Writeup</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Oct 13, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p><img src="/img/ton_ctf_2024.jpg" alt="Ton CTF 2024"></p>
+<p>This article is a write-up of the TON CTF 2024 competition that I participated in with <a href="http://t.me/leouvw">Leo</a>. The TON CTF was sponsored by the TON Foundation and organized by Tonbit and TONX Studio. The competition encompassed multiple challenges related to the TON blockchain, all written in the Tact language. Tact is a high-level language that compiles to Func, which is then compiled to Fift, ultimately generating bytecode suitable for the TON virtual machine. This competition allowed me to gain a deeper understanding of the uniqueness of the TON ecosystem and its programming model.</p>
+<p>This was my first time participating in a CTF-related competition, and the entire experience was both thrilling and unforgettable. The competition lasted only one day and consisted of 8 challenges. My teammate Leo and I completed this challenge together, ultimately achieving fourth place. You can view detailed descriptions of each challenge in this repository: <a href="https://github.com/TonBitSec/TonCTF-Challenges">TonCTF-Challenges</a>.</p>
+<p><img src="/img/ton_ctf_2024_socreboard.png" alt="Socreboard"></p>
+<h2 id="airdrop">Airdrop</h2>
+<p><strong>Score: 100</strong>
+The objective of the Airdrop challenge was to deplete the contract&rsquo;s initial supply of 30,000 tokens. The contract allowed users to claim 1 token, but the vulnerability appeared in the implementation of the deposit and withdrawal functions. Because the contract didn&rsquo;t strictly check if the input amount was positive, we could exploit negative values to manipulate the contract&rsquo;s balance.</p>
+<p><strong>Solution Steps:</strong> We first constructed a message with a negative amount and sent it to the contract, thereby bypassing the contract&rsquo;s balance check and reducing the contract&rsquo;s supply, ultimately achieving the goal. The core code is as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#a6e22e">airdrop</span>.<span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">sender</span>(),{ <span style="color:#a6e22e">value</span>: <span style="color:#66d9ef">toNano</span>(<span style="color:#e6db74">&#34;0.1&#34;</span>) },{ <span style="color:#a6e22e">$$type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;UserStake&#34;</span>, <span style="color:#a6e22e">amount</span><span style="color:#f92672">:</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">30000</span><span style="color:#a6e22e">n</span> })
+</span></span></code></pre></div><p>This code&rsquo;s purpose is to construct a message containing a negative amount, calling the UserStake message. By passing a negative amount into the contract, it causes the contract to erroneously decrease its total supply.</p>
+<h2 id="random">Random</h2>
+<p><strong>Score: 100</strong>
+The Random challenge required us to guess a lucky number. If guessed correctly, the contract would set a flag to 1, indicating successful completion of the challenge. The contract used the current time and the user&rsquo;s address hash to generate a random number, but due to the small range of the hash generation (0-99), we were able to solve this problem using a brute-force guessing method.</p>
+<p><strong>Solution Steps:</strong> We wrote a simple script that continuously sent different numbers to guess the lucky number until it matched the value generated by the contract, thus successfully passing the challenge.</p>
+<h2 id="eccs">Eccs</h2>
+<p><strong>Score: 100</strong>
+The Eccs challenge involved the Elliptic Curve Discrete Logarithm Problem (ECDLP). The contract implemented standard elliptic curve addition and multiplication operations, with the goal of calculating the multiplication factor given a specific curve point.</p>
+<p><strong>Solution Steps:</strong> We assumed that the range of <code>k</code> was relatively small and tried a brute-force approach. Alternatively, we could have used <strong>SageMath</strong> to solve it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>p <span style="color:#f92672">=</span> <span style="color:#ae81ff">738077334260605249</span>
+</span></span><span style="display:flex;"><span>a <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Point</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, x, y):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>x <span style="color:#f92672">=</span> x
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>y <span style="color:#f92672">=</span> y
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>is_infinity <span style="color:#f92672">=</span> (x <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span> <span style="color:#f92672">and</span> y <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_at_infinity</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>is_infinity
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __eq__(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>is_at_infinity() <span style="color:#f92672">and</span> other<span style="color:#f92672">.</span>is_at_infinity():
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>x <span style="color:#f92672">==</span> other<span style="color:#f92672">.</span>x <span style="color:#f92672">and</span> self<span style="color:#f92672">.</span>y <span style="color:#f92672">==</span> other<span style="color:#f92672">.</span>y
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __str__(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>is_at_infinity():
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Point at infinity&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;(</span><span style="color:#e6db74">{</span>self<span style="color:#f92672">.</span>x<span style="color:#e6db74">}</span><span style="color:#e6db74">, </span><span style="color:#e6db74">{</span>self<span style="color:#f92672">.</span>y<span style="color:#e6db74">}</span><span style="color:#e6db74">)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>O <span style="color:#f92672">=</span> Point(<span style="color:#66d9ef">None</span>, <span style="color:#66d9ef">None</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">point_add</span>(P, Q):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> P<span style="color:#f92672">.</span>is_at_infinity():
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Q
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> Q<span style="color:#f92672">.</span>is_at_infinity():
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> P
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> P<span style="color:#f92672">.</span>x <span style="color:#f92672">==</span> Q<span style="color:#f92672">.</span>x <span style="color:#f92672">and</span> (P<span style="color:#f92672">.</span>y <span style="color:#f92672">+</span> Q<span style="color:#f92672">.</span>y) <span style="color:#f92672">%</span> p <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> O
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> P <span style="color:#f92672">==</span> Q:
+</span></span><span style="display:flex;"><span>        lam <span style="color:#f92672">=</span> (<span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> P<span style="color:#f92672">.</span>x <span style="color:#f92672">*</span> P<span style="color:#f92672">.</span>x <span style="color:#f92672">+</span> a) <span style="color:#f92672">*</span> pow(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> P<span style="color:#f92672">.</span>y, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, p) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        lam <span style="color:#f92672">=</span> (Q<span style="color:#f92672">.</span>y <span style="color:#f92672">-</span> P<span style="color:#f92672">.</span>y) <span style="color:#f92672">*</span> pow(Q<span style="color:#f92672">.</span>x <span style="color:#f92672">-</span> P<span style="color:#f92672">.</span>x, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, p) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    x_r <span style="color:#f92672">=</span> (lam <span style="color:#f92672">*</span> lam <span style="color:#f92672">-</span> P<span style="color:#f92672">.</span>x <span style="color:#f92672">-</span> Q<span style="color:#f92672">.</span>x) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    y_r <span style="color:#f92672">=</span> (lam <span style="color:#f92672">*</span> (P<span style="color:#f92672">.</span>x <span style="color:#f92672">-</span> x_r) <span style="color:#f92672">-</span> P<span style="color:#f92672">.</span>y) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Point(x_r, y_r)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">scalar_mult</span>(k, P):
+</span></span><span style="display:flex;"><span>    R <span style="color:#f92672">=</span> O
+</span></span><span style="display:flex;"><span>    N <span style="color:#f92672">=</span> P
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> k <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> k <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>            R <span style="color:#f92672">=</span> point_add(R, N)
+</span></span><span style="display:flex;"><span>        N <span style="color:#f92672">=</span> point_add(N, N)
+</span></span><span style="display:flex;"><span>        k <span style="color:#f92672">=</span> k <span style="color:#f92672">//</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>P1 <span style="color:#f92672">=</span> Point(<span style="color:#ae81ff">627636259244800403</span>, <span style="color:#ae81ff">317346088871876181</span>)
+</span></span><span style="display:flex;"><span>P2 <span style="color:#f92672">=</span> Point(<span style="color:#ae81ff">456557409365020317</span>, <span style="color:#ae81ff">354112687690635257</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">brute_force_k</span>(max_range):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> k <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, max_range):
+</span></span><span style="display:flex;"><span>        R <span style="color:#f92672">=</span> scalar_mult(k, P1)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> R <span style="color:#f92672">==</span> P2:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;k: </span><span style="color:#e6db74">{</span>k<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> k
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> k <span style="color:#f92672">%</span> <span style="color:#ae81ff">100000</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;try k = </span><span style="color:#e6db74">{</span>k<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;not found k&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>max_range <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000000</span>
+</span></span><span style="display:flex;"><span>k <span style="color:#f92672">=</span> brute_force_k(max_range)
+</span></span></code></pre></div><p>After running, we wait a while and get the result 844279</p>
+<h2 id="dex">Dex</h2>
+<p><strong>Score: 200</strong>
+The Dex challenge combined rounding error vulnerabilities in DeFi exchanges with some unique features of the TON blockchain. The contract incorrectly rounded up the <code>out_amount</code> during the exchange process, leading to an exploitable vulnerability.</p>
+<p><strong>Solution Steps:</strong> We first exploited the rounding error for arbitrage, but this alone was not enough to fully solve the challenge. To further reduce the contract balance, we needed to attach a sufficiently large TON balance to bypass the balance check during withdrawal, and then recover this part of TON after the operation, thereby successfully reducing the contract&rsquo;s balance and ultimately solving the challenge.</p>
+<h2 id="puzzle">Puzzle</h2>
+<p><strong>Score: 200</strong>
+The Puzzle challenge was a bit manipulation problem involving multiple variables, but the bitwise operations in the contract were not functioning correctly. This allowed us to solve the problem by adjusting the variable values to meet the contract&rsquo;s target conditions.</p>
+<p><strong>Solution Steps:</strong> We can write a Depth-First Search (DFS) algorithm that recursively tries each combination of operations to find a solution where the sum of the variables equals the target value. Here&rsquo;s the implementation code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PuzzleSolver</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>b <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>c <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>e <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>f <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>target <span style="color:#f92672">=</span> <span style="color:#ae81ff">638</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>max_steps <span style="color:#f92672">=</span> <span style="color:#ae81ff">13</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>solved <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate1</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">-=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">+=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>f <span style="color:#f92672">-=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate2</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">+=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>c <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">//=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>f <span style="color:#f92672">*=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate2&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate3</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">*=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>b <span style="color:#f92672">-=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">+=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate3&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate4</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">+=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>c <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">+=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>f <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate4&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate5</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">-=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>c <span style="color:#f92672">+=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">-=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>f <span style="color:#f92672">+=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate5&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate6</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">*=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>b <span style="color:#f92672">+=</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>c <span style="color:#f92672">*=</span> <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>e <span style="color:#f92672">+=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate6&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">operate7</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>a <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>b <span style="color:#f92672">//=</span> <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>c <span style="color:#f92672">*=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>e <span style="color:#f92672">-=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>f <span style="color:#f92672">+=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>pc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>operations<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#39;operate7&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">check_solution</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (self<span style="color:#f92672">.</span>a <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>b <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>c <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>d <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>e <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>f <span style="color:#f92672">==</span> self<span style="color:#f92672">.</span>target) <span style="color:#f92672">and</span> (self<span style="color:#f92672">.</span>pc <span style="color:#f92672">&lt;=</span> self<span style="color:#f92672">.</span>max_steps)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dfs</span>(self, depth<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>check_solution():
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>solved <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;Solution found with operations:&#34;</span>, self<span style="color:#f92672">.</span>operations)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> depth <span style="color:#f92672">==</span> self<span style="color:#f92672">.</span>max_steps <span style="color:#f92672">or</span> self<span style="color:#f92672">.</span>solved:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Try each operation recursively</span>
+</span></span><span style="display:flex;"><span>        backup <span style="color:#f92672">=</span> (self<span style="color:#f92672">.</span>a, self<span style="color:#f92672">.</span>b, self<span style="color:#f92672">.</span>c, self<span style="color:#f92672">.</span>d, self<span style="color:#f92672">.</span>e, self<span style="color:#f92672">.</span>f, self<span style="color:#f92672">.</span>pc, list(self<span style="color:#f92672">.</span>operations))
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> operate <span style="color:#f92672">in</span> [self<span style="color:#f92672">.</span>operate1, self<span style="color:#f92672">.</span>operate2, self<span style="color:#f92672">.</span>operate3, self<span style="color:#f92672">.</span>operate4, self<span style="color:#f92672">.</span>operate5, self<span style="color:#f92672">.</span>operate6, self<span style="color:#f92672">.</span>operate7]:
+</span></span><span style="display:flex;"><span>            operate()
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>dfs(depth <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>a, self<span style="color:#f92672">.</span>b, self<span style="color:#f92672">.</span>c, self<span style="color:#f92672">.</span>d, self<span style="color:#f92672">.</span>e, self<span style="color:#f92672">.</span>f, self<span style="color:#f92672">.</span>pc, self<span style="color:#f92672">.</span>operations <span style="color:#f92672">=</span> backup
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>solver <span style="color:#f92672">=</span> PuzzleSolver()
+</span></span><span style="display:flex;"><span>solver<span style="color:#f92672">.</span>dfs()
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;Solved:&#34;</span>, solver<span style="color:#f92672">.</span>solved)
+</span></span></code></pre></div><p>This code uses depth-first search to try every possible combination of operations until it finds a solution that satisfies the conditions.</p>
+<h2 id="merkleairdrop">MerkleAirdrop</h2>
+<p><strong>Score: 300</strong>
+The MerkleAirdrop challenge involved using a Merkle tree for airdrop verification. The vulnerability in the contract was in its <code>verify</code> function, which used a non-standard method for node calculation. This allowed us to forge valid proofs to bypass the verification.</p>
+<p><strong>Solution Steps:</strong>
+Observing the contract&rsquo;s <code>init</code> function, the <code>merkleRoot</code> calculation logic starts from <code>y0 = sha256('EQ...NM0'+'614')</code>, then iterates three rounds using three integers from <code>nodes</code> (denoted as <code>n0</code>, <code>n1</code>, <code>n2</code>):
+<code>y_(i+1) = sha256(string(diff(y_i, n_i)))</code>, taking the final <code>y3</code> value.</p>
+<p>Further observing the <code>Claim</code> message handling logic, it&rsquo;s easy to see that we can succeed by replacing <code>y0</code> with <code>sha256(&lt;recipient&gt;+'10000')</code> and using custom <code>nodes</code> to calculate the same <code>merkleRoot</code> through similar logic.</p>
+<p>Clearly, the key lies in the step <code>y3 = sha256(string(diff(y2, n2)))</code> where <code>diff(y2, n2)</code> must be the same as the value calculated in <code>init</code>. To achieve this, first calculate the reference value <code>d</code>, then choose <code>&lt;recipient&gt;</code> and <code>n0</code>, <code>n1</code>, calculate the value of <code>y2</code>, and make <code>n2 = (y2 &gt; d) ? (y2 - d) : (y2 + d)</code>.</p>
+<h2 id="ecc">Ecc</h2>
+<p><strong>Score: 300</strong>
+The Ecc challenge was similar to Eccs, also involving elliptic curve addition and multiplication operations, but with higher difficulty, requiring solving the discrete logarithm problem between two points. The key to this challenge was understanding the slope calculation method of the curve and using it to find the correct multiplication factor.</p>
+<p><strong>Solution Steps:</strong> Attempt to use the Baby-step Giant-step algorithm for brute-force cracking.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> math
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Prime modulus for the elliptic curve</span>
+</span></span><span style="display:flex;"><span>p <span style="color:#f92672">=</span> <span style="color:#ae81ff">769908256801249</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">invMod</span>(x, p):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Calculate modular inverse</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> pow(x <span style="color:#f92672">%</span> p, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, p)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">point_add</span>(P, Q):
+</span></span><span style="display:flex;"><span>    x1, y1 <span style="color:#f92672">=</span> P
+</span></span><span style="display:flex;"><span>    x2, y2 <span style="color:#f92672">=</span> Q
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (x1 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> y1 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (x2 <span style="color:#f92672">%</span> p, y2 <span style="color:#f92672">%</span> p)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (x2 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> y2 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (x1 <span style="color:#f92672">%</span> p, y1 <span style="color:#f92672">%</span> p)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> x1 <span style="color:#f92672">==</span> x2 <span style="color:#f92672">and</span> y1 <span style="color:#f92672">==</span> y2:
+</span></span><span style="display:flex;"><span>        numerator <span style="color:#f92672">=</span> (<span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> x1 <span style="color:#f92672">*</span> x2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> x1 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>        denominator <span style="color:#f92672">=</span> (y1 <span style="color:#f92672">+</span> y2) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> denominator <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        m <span style="color:#f92672">=</span> (numerator <span style="color:#f92672">*</span> invMod(denominator, p)) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        numerator <span style="color:#f92672">=</span> (y2 <span style="color:#f92672">-</span> y1) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>        denominator <span style="color:#f92672">=</span> (x2 <span style="color:#f92672">-</span> x1) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> denominator <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        m <span style="color:#f92672">=</span> (numerator <span style="color:#f92672">*</span> invMod(denominator, p)) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    x3 <span style="color:#f92672">=</span> (m <span style="color:#f92672">*</span> m <span style="color:#f92672">-</span> x1 <span style="color:#f92672">-</span> x2 <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    y3 <span style="color:#f92672">=</span> (m <span style="color:#f92672">*</span> (x1 <span style="color:#f92672">-</span> x3) <span style="color:#f92672">-</span> y1) <span style="color:#f92672">%</span> p
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (x3 <span style="color:#f92672">%</span> p, y3 <span style="color:#f92672">%</span> p)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">point_neg</span>(P):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Negate a point</span>
+</span></span><span style="display:flex;"><span>    x, y <span style="color:#f92672">=</span> P
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (x <span style="color:#f92672">%</span> p, (<span style="color:#f92672">-</span>y) <span style="color:#f92672">%</span> p)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">point_sub</span>(P, Q):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Point subtraction P - Q</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> point_add(P, point_neg(Q))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">scalar_mul</span>(P, n):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Scalar multiplication</span>
+</span></span><span style="display:flex;"><span>    R <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    Q <span style="color:#f92672">=</span> P
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> n <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>            R <span style="color:#f92672">=</span> point_add(R, Q)
+</span></span><span style="display:flex;"><span>        Q <span style="color:#f92672">=</span> point_add(Q, Q)
+</span></span><span style="display:flex;"><span>        n <span style="color:#f92672">=</span> n <span style="color:#f92672">//</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">BSGS</span>(P, Q, m):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Baby-step Giant-step algorithm</span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Starting Baby-step Giant-step algorithm&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Precompute Baby steps</span>
+</span></span><span style="display:flex;"><span>    baby_steps <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>    R <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Calculating Baby steps...&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(m):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> R <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> baby_steps:
+</span></span><span style="display:flex;"><span>            baby_steps[R] <span style="color:#f92672">=</span> j
+</span></span><span style="display:flex;"><span>        R <span style="color:#f92672">=</span> point_add(R, P)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> j <span style="color:#f92672">%</span> (m <span style="color:#f92672">//</span> <span style="color:#ae81ff">10</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> j <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Baby steps progress: </span><span style="color:#e6db74">{</span>j<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{</span>m<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Calculate s = m * P</span>
+</span></span><span style="display:flex;"><span>    s <span style="color:#f92672">=</span> scalar_mul(P, m)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Giant steps</span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Calculating Giant steps...&#34;</span>)
+</span></span><span style="display:flex;"><span>    R <span style="color:#f92672">=</span> Q
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(m):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> R <span style="color:#f92672">in</span> baby_steps:
+</span></span><span style="display:flex;"><span>            j <span style="color:#f92672">=</span> baby_steps[R]
+</span></span><span style="display:flex;"><span>            k <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> m <span style="color:#f92672">+</span> j
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution found: k = </span><span style="color:#e6db74">{</span>k<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> k
+</span></span><span style="display:flex;"><span>        R <span style="color:#f92672">=</span> point_sub(R, s)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">%</span> (m <span style="color:#f92672">//</span> <span style="color:#ae81ff">10</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> i <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Giant steps progress: </span><span style="color:#e6db74">{</span>i<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{</span>m<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;No solution found. Please increase the value of m and try again.&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Given points</span>
+</span></span><span style="display:flex;"><span>p1 <span style="color:#f92672">=</span> (<span style="color:#ae81ff">232682398601200</span>, <span style="color:#ae81ff">266866051136644</span>)
+</span></span><span style="display:flex;"><span>p2 <span style="color:#f92672">=</span> (<span style="color:#ae81ff">565954914175128</span>, <span style="color:#ae81ff">196353530004690</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Set the value of m, can be adjusted based on memory and time constraints</span>
+</span></span><span style="display:flex;"><span>m <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">**</span> <span style="color:#ae81ff">25</span>  <span style="color:#75715e"># Approximately 1,048,576</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>k <span style="color:#f92672">=</span> BSGS(p1, p2, m)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> k <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Found k: </span><span style="color:#e6db74">{</span>k<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Verify the result</span>
+</span></span><span style="display:flex;"><span>    check <span style="color:#f92672">=</span> scalar_mul(p1, k)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> check <span style="color:#f92672">==</span> p2:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Verification successful, the value of k is correct.&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Verification failed, the value of k is incorrect.&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Unable to find the value of k. Please try increasing the value of m.&#34;</span>)
+</span></span></code></pre></div><p>Found k: 45514416202853</p>
+<h2 id="curve">Curve</h2>
+<p><strong>Score: 200</strong>
+The Curve challenge involved a mathematical problem, specifically solving the discrete logarithm problem on a given curve. The curve&rsquo;s behavior was defined in the contract, with the focus on understanding the implementation of point addition and how to solve the discrete logarithm through the relationship between points.</p>
+<p><strong>Solution Steps:</strong>
+Observing the implementation of the contract&rsquo;s <code>add</code> function, after simplification, we find that the defined point operation satisfies (under modulo $p$)
+$$x_{P_{1}+P_2}=x_{P_1}+x_{P_2}-x_{P_0}$$</p>
+<p>Selecting the base point $G$, we obviously have
+$$x_{k\cdot G}=k\cdot x_G-(k-1)\cdot x_{P_0}$$</p>
+<p>That is,
+$$k=(x_{k\cdot G}-x_{P_0})(x_G-x_{P_0})^{-1}$$</p>
+<p>Substitute <code>zero.x</code>, <code>p1.x</code>, <code>p2.x</code>, and <code>p</code> to solve for <code>k</code>.</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/solana_dex_parse_trade/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>如何快速解析Solana链上DEX交易数据</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/ton_ctf_2024_cn/"
+      ><span>TON CTF 2024 Writeup(中文)</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

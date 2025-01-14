@@ -1,0 +1,690 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Consul &#43; fabio 实现自动服务发现、负载均衡 - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="摘要
+
+Consul 介绍
+fabio  介绍
+服务发现的特点
+工作原理
+Demo
+结合kubernetes扩容
+
+Consul
+hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队
+Consul 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件
+比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 Consul和ZooKeeper的区别" />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="Consul &#43; fabio 实现自动服务发现、负载均衡">
+  <meta itemprop="description" content="摘要 Consul 介绍 fabio 介绍 服务发现的特点 工作原理 Demo 结合kubernetes扩容 Consul hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队
+Consul 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件 比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 Consul和ZooKeeper的区别">
+  <meta itemprop="datePublished" content="2016-07-22T09:07:10+08:00">
+  <meta itemprop="dateModified" content="2016-07-22T09:07:10+08:00">
+  <meta itemprop="wordCount" content="910">
+  <meta itemprop="keywords" content="Consul,Fabio">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/consul_fabio_load_balancer/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="Consul &#43; fabio 实现自动服务发现、负载均衡">
+  <meta property="og:description" content="摘要 Consul 介绍 fabio 介绍 服务发现的特点 工作原理 Demo 结合kubernetes扩容 Consul hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队
+Consul 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件 比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 Consul和ZooKeeper的区别">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2016-07-22T09:07:10+08:00">
+    <meta property="article:modified_time" content="2016-07-22T09:07:10+08:00">
+    <meta property="article:tag" content="Consul">
+    <meta property="article:tag" content="Fabio">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Consul &#43; fabio 实现自动服务发现、负载均衡">
+  <meta name="twitter:description" content="摘要 Consul 介绍 fabio 介绍 服务发现的特点 工作原理 Demo 结合kubernetes扩容 Consul hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队
+Consul 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件 比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 Consul和ZooKeeper的区别">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/consul_fabio_load_balancer/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Consul &#43; fabio 实现自动服务发现、负载均衡</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jul 22, 2016</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="摘要">摘要</h3>
+<ul>
+<li>Consul 介绍</li>
+<li>fabio  介绍</li>
+<li>服务发现的特点</li>
+<li>工作原理</li>
+<li>Demo</li>
+<li>结合kubernetes扩容</li>
+</ul>
+<h3 id="consul">Consul</h3>
+<p>hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队</p>
+<p><a href="https://www.consul.io/">Consul</a> 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件
+比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 <a href="http://dockone.io/article/300">Consul和ZooKeeper的区别</a></p>
+<h3 id="fabio">fabio</h3>
+<p>fabio 是 ebay 团队用 golang 开发的一个快速、简单零配置能够让 consul 部署的应用快速支持 http(s) 的负载均衡路由器
+因为 consul 支持服务注册与健康检查所以 fabio 能够零配置提供负载，升级部署从未如此简单。
+根据项目的介绍fabio 能提供每秒15000次请求</p>
+<p>有了这两个组件非常容易做服务发现与自动负载均衡, &ldquo;神器在手、天下我有!&rdquo; ^ _ ^</p>
+<h3 id="服务发现的特点">服务发现的特点</h3>
+<p>服务与服务之间的调用需要在配置文件中填写好主机和端口,不易于维护且分布式环境中不易于部署与扩容
+那么此时就需要考虑服务启动的时候自己把主机和端口以及一些其他信息注册到注册中心，这样其他服务可以从中找到它
+甚至更为简单的注册完毕后通过 DNS 的方式来『寻址』。比如 Zookeepr 可以很好的完成这个工作，但是其中还有一个弊端就是服务的健康检查服务注册到注册中心之后如何保证这个服务一定可用？此时就需要自己来写逻辑当服务不可用的时候自动从注册中心下线掉。 然后Consul 可以很轻易的解决这个问题</p>
+<h3 id="工作原理">工作原理</h3>
+<p>Consul 提供了一套健康检测机制简单的说针对 http 类型的服务(consul 也支持 其他类型例如tcp)在注册的时候可以顺便注册下健康检测的信息，提供一个健康检测的地址(url)以及一个频率超时时间这样的话 consul 会定期的来请求当状态码是200的时候设置次服务是健康的状态否则是故障状态</p>
+<p>既然注册到consul的服务能够自己维护健康状态此时 fabio 的工作就很简单了！ 就是直接从consul 注册表里面取出健康的服务根据服务注册时候的 tags 配置自动创建自己的路由表，然后当一个 http 请求过来的时候自动去做负载均衡</p>
+<p>简单的流程图如下:</p>
+<pre tabindex="0"><code>======    服务注册     =========       =========
+  A服务   &lt;------&gt;      consul集群  ----&gt;  健康的 A/不健康的 A 集群
+======    健康检查     =========       =========
+                                         ^
+                                         | 加入/移出路由表
+                                         |
+                                      ========
+                                       fabio 集群
+                                      ========
+                                         |
+                                         | A服务   如果找到则成功路由否则返回错误
+                                         V
+                                        http 请求
+</code></pre><h3 id="demo">Demo</h3>
+<p>这里我们开始写一个 demo 服务来体验一波 consul+ fabio 顺便用 docker + k8s 来编排扩容</p>
+<p>因为 consul + fabio 都支持 docker 的方式运行这里均以 docker 方式为例子</p>
+<p>docker pull magiconair/fabio</p>
+<p><a href="https://hub.docker.com/_/consul/">docker pull consul</a></p>
+<p>consul 可以用集群的方式开发环境中也可以用 dev 模式 可以<a href="https://hub.docker.com/_/consul/">参考这里</a></p>
+<p>这里可以参考我整理的单机部署 consul 集群的 docker compose 配置</p>
+<pre tabindex="0"><code>version: &#39;2&#39;
+
+services:
+  consul_server_1:
+    image: &#34;consul:latest&#34;
+    container_name: &#34;consul_server_1&#34;
+    environment:
+      CONSUL_LOCAL_CONFIG: &#39;{&#34;leave_on_terminate&#34;: true}&#39;
+    networks:
+      app_net:
+        ipv4_address: 172.17.0.3
+    command: &#34;agent -server -bind=172.17.0.3 -client=172.17.0.3 -retry-join=172.17.0.2&#34;
+
+  consul_server_2:
+    image: &#34;consul:latest&#34;
+    container_name: &#34;consul_server_2&#34;
+    ports:
+      - &#34;8600:8600&#34;
+      - &#34;8500:8500&#34;
+    networks:
+      app_net:
+        ipv4_address: 172.17.0.4
+    command: &#34;agent -server -bind=172.17.0.4 -client=172.17.0.4 -retry-join=172.17.0.3 -ui&#34;
+
+  consul_server_3:
+    image: &#34;consul:latest&#34;
+    container_name: &#34;consul_server_3&#34;
+    environment:
+      CONSUL_LOCAL_CONFIG: &#39;{&#34;leave_on_terminate&#34;: true}&#39;
+    networks:
+      app_net:
+        ipv4_address: 172.17.0.5
+    command: &#34;agent -server -bind=172.17.0.5 -client=172.17.0.5 -retry-join=172.17.0.4 -bootstrap-expect=3&#34;
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.17.0.0/24
+</code></pre><p>也可以按照 docker hub 上的文档自己部署, 启动成功之后访问下 consul ui</p>
+<p><img src="/img/consul-ui.png" alt="consul"></p>
+<p>然后部署 faibo
+docker-compose.yml</p>
+<pre tabindex="0"><code>fabio:
+  image: &#34;magiconair/fabio&#34;
+  ports:
+    - &#34;9998:9998&#34;
+    - &#34;9999:9999&#34;
+  volumes:
+    - ./fabio.properties:/etc/fabio/fabio.properties
+</code></pre><p>fabio 虽然说是零配置但是某些情况下还是需要个性化配置一些东西,此时可以去写一个简单的配置<a href="https://raw.githubusercontent.com/eBay/fabio/master/fabio.properties">fabio.properties</a></p>
+<p>指定了 consul 的地址端口以及自身的一些统计信息等等</p>
+<pre tabindex="0"><code> registry.consul.register.addr = 172.16.0.21:9998
+
+ registry.consul.addr = 172.16.0.21:8500
+ 
+ metrics.target = stdout
+</code></pre><p><img src="/img/fabio.png" alt="fabio"></p>
+<p>fabio 不仅仅可以与 consul 结合可以以手动写一些路由规则
+语法如下</p>
+<pre tabindex="0"><code>route add &lt;svc&gt; &lt;src&gt; &lt;dst&gt; weight &lt;w&gt; tags &#34;&lt;t1&gt;,&lt;t2&gt;,...&#34;
+  - Add route for service svc from src to dst and assign weight and tags
+
+route add &lt;svc&gt; &lt;src&gt; &lt;dst&gt; weight &lt;w&gt;
+  - Add route for service svc from src to dst and assign weight
+</code></pre><p><a href="https://github.com/eBay/fabio/wiki/Routing#manual-overrides">详情请移步</a></p>
+<p>此时安装部署完毕之后跑一个 demo 试试</p>
+<p>官方提供了一个简单的实现</p>
+<pre tabindex="0"><code>package main
+
+import (
+	&#34;flag&#34;
+	&#34;fmt&#34;
+	&#34;log&#34;
+	&#34;net&#34;
+	&#34;net/http&#34;
+	&#34;os&#34;
+	&#34;os/signal&#34;
+	&#34;path/filepath&#34;
+	&#34;strconv&#34;
+	&#34;strings&#34;
+
+	&#34;github.com/magiconair/fabio-example/_third_party/github.com/hashicorp/consul/api&#34;
+)
+
+func main() {
+	var addr, name, prefix string
+	flag.StringVar(&amp;addr, &#34;addr&#34;, &#34;127.0.0.1:5000&#34;, &#34;host:port of the service&#34;)
+	flag.StringVar(&amp;name, &#34;name&#34;, filepath.Base(os.Args[0]), &#34;name of the service&#34;)
+	flag.StringVar(&amp;prefix, &#34;prefix&#34;, &#34;&#34;, &#34;comma-sep list of host/path prefixes to register&#34;)
+	flag.Parse()
+
+	if prefix == &#34;&#34; {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	// register prefixes
+	prefixes := strings.Split(prefix, &#34;,&#34;)
+	for _, p := range prefixes {
+		http.HandleFunc(p, func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, &#34;Serving %s from %s on %s\n&#34;, r.RequestURI, name, addr)
+		})
+	}
+
+	// start http server
+	go func() {
+		log.Printf(&#34;Listening on %s serving %s&#34;, addr, prefix)
+		if err := http.ListenAndServe(addr, nil); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// register consul health check endpoint
+	http.HandleFunc(&#34;/health&#34;, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, &#34;OK&#34;)
+	})
+
+	// build urlprefix-host/path tag list
+	// e.g. urlprefix-/foo, urlprefix-/bar, ...
+	var tags []string
+	for _, p := range prefixes {
+		tags = append(tags, &#34;urlprefix-&#34;+p)
+	}
+
+	// get host and port as string/int
+	host, portstr, err := net.SplitHostPort(addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	port, err := strconv.Atoi(portstr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// register service with health check
+	serviceID := name + &#34;-&#34; + addr
+	service := &amp;api.AgentServiceRegistration{
+		ID:      serviceID,
+		Name:    name,
+		Port:    port,
+		Address: host,
+		Tags:    tags,
+		Check: &amp;api.AgentServiceCheck{
+			HTTP:     &#34;http://&#34; + addr + &#34;/health&#34;,
+			Interval: &#34;1s&#34;,
+			Timeout:  &#34;1s&#34;,
+		},
+	}
+
+	client, err := api.NewClient(api.DefaultConfig())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Agent().ServiceRegister(service); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf(&#34;Registered service %q in consul with tags %q&#34;, name, strings.Join(tags, &#34;,&#34;))
+
+	// run until we get a signal
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, os.Kill)
+	&lt;-quit
+
+	// deregister service
+	if err := client.Agent().ServiceDeregister(serviceID); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf(&#34;Deregistered service %q in consul&#34;, name)
+}
+</code></pre><p>程序在启动的时候去注册并且注册了健康检测的地址/health,在退出的时候去取消注册,往 consul注册服务的时候有个 tags 可以允许给这个服务传一个标签 fabio 根据这个参数来自动关联路由映射</p>
+<p>先跑下试试</p>
+<pre tabindex="0"><code>CONSUL_HTTP_ADDR=172.16.0.21:8500 ./fabio-example -addr=172.16.0.17:9876 -prefix=a.com/
+</code></pre><p>此时 consul 已经收到注册 fabio 路由已经添加</p>
+<pre tabindex="0"><code>#	Service	Host	Path	Dest	Weight
+1	fabio-example	a.com	/	http://172.16.0.17:9876/	100%
+</code></pre><pre tabindex="0"><code>➜  ~ curl -iv -H &#39;Host: a.com&#39; 172.16.0.21:9999/
+*   Trying 172.16.0.21...
+* Connected to 172.16.0.21 (172.16.0.21) port 9999 (#0)
+&gt; GET / HTTP/1.1
+&gt; Host: a.com
+&gt; User-Agent: curl/7.43.0
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+&lt; Content-Length: 49
+Content-Length: 49
+&lt; Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8
+&lt; Date: Fri, 22 Jul 2016 01:01:28 GMT
+Date: Fri, 22 Jul 2016 01:01:28 GMT
+
+&lt;
+Serving / from fabio-example on 172.16.0.17:9876
+* Connection #0 to host 172.16.0.21 left intact
+</code></pre><h3 id="结合kubernetes扩容">结合kubernetes扩容</h3>
+<p>如果基于 k8s 做编排的话需要做一些修改例如: ip端口 要动态的从容器里面获取,服务启动的时候那个 tags prefix 需要配置,可以参考<a href="https://github.com/eBay/fabio/wiki">fabio的文档</a></p>
+<p>这里我就用 java 快速搭建了一个, Spring框架提供了服务发现一条龙服务针对 consul 的就是 <a href="https://github.com/spring-cloud/spring-cloud-consul/blob/master/docs/src/main/asciidoc/spring-cloud-consul.adoc">spring-cloud-consul</a> 只要一行代码 几行配置就能快速使用 ：)
+Application类上添加@EnableDiscoveryClient注解</p>
+<p>application.yml</p>
+<pre tabindex="0"><code>spring:
+  cloud:
+    consul:
+      discovery:
+        healthCheckPath: ${management.contextPath}/health  #健康检测的路径 
+        healthCheckInterval: 15s #健康检测的频率
+        tags: urlprefix-api.xxxx.com/  #fabio 的路由规则
+</code></pre><p>ps: spring 健康检测可以用 spring-boot-starter-actuator快速实现</p>
+<p>然后 k8s 里面需要扩容就可以任性扩容了,因为如果不采用服务发现的方式 k8s 扩容时候可能 http 请求会转发到启动完毕的容器但是服务并不可用（例如 java 进程虽然启动了但是初始化可能需要几分钟&hellip;）</p>
+<p>感受一下 扩容10个</p>
+<pre tabindex="0"><code>$ kubectl scale --replicas=10 rc api
+
+$ kubectl get pods
+
+[root@172-16-0-17 fabio-example]# kubectl get pods
+NAME                                             READY     STATUS    RESTARTS   AGE
+api-6xytx                                         1/1       Running   0          11s
+api-9e5838075aae036e2dc971984855e379-ac30s        1/1       Running   0          14h
+api-dfmtv                                         1/1       Running   0          11s
+api-eo01h                                         1/1       Running   0          11s
+api-hn1kv                                         1/1       Running   0          11s
+api-iyqmg                                         1/1       Running   0          11s
+api-k32ud                                         1/1       Running   0          11s
+api-q10a7                                         1/1       Running   0          11s
+api-re7e1                                         1/1       Running   0          11s
+api-tm2pk                                         1/1       Running   0          11s
+</code></pre><p>10秒中瞬间扩容至10个 然后看下 consul 与 fabio</p>
+<p><img src="/img/docker-consul.png" alt="docker-consul"></p>
+<p>fabio</p>
+<pre tabindex="0"><code>
+#	Service	Host	Path	Dest	            Weight
+1	api	api.com   	/	http://172.31.9.3:8080/	    10%
+2	api	api.com  	/	http://172.31.9.2:8080/	    10%
+3	api	api.com	    /	http://172.31.82.6:8080/	10%
+4	api	api.com	    /	http://172.31.82.4:8080/	10%
+5	api	api.com	    /	http://172.31.28.3:8080/	10%
+6	api	api.com   	/	http://172.31.28.2:8080/	10%
+7	api	api.com	    /	http://172.31.23.7:8080/	10%
+8	api	api.com	    /	http://172.31.23.2:8080/	10%
+9	api	api.com	    /	http://172.31.12.6:8080/	10%
+10	api	api.com    	/	http://172.31.12.4:8080/	10%
+</code></pre><p>此时在收缩至一个的时候 fabio 也能立即更新路由表</p>
+<p>===
+通过 fabio+consul 的结合可以很轻松的在分布式环境中进行部署与扩容
+另外 consul 还提供了一切其他的组建也可以完成类似的功能例如 [consul-template]（https://github.com/hashicorp/consul-template）</p>
+<p>参考链接</p>
+<ul>
+<li><a href="https://github.com/eBay/fabio/wiki/Configuration">https://github.com/eBay/fabio/wiki/Configuration</a></li>
+<li><a href="https://www.consul.io/docs/agent/basics.html">https://www.consul.io/docs/agent/basics.html</a></li>
+<li><a href="http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html">http://cloud.spring.io/spring-cloud-consul/spring-cloud-consul.html</a></li>
+</ul></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/consul"
+      >consul</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/fabio"
+      >fabio</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/java_analysis_heap_dump/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>分析 heap dump 文件</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/gitlab_bot_ci/"
+      ><span>使用gitlab 进行持续集成</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

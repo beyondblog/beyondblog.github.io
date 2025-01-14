@@ -1,0 +1,615 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>kubernetes v1.0 指南 - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="操作系统：
+CentOS7
+$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+Docker 版本
+$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+kubernetes 版本
+$ kubectl version
+Client Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;}
+Server Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;}
+" />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="kubernetes v1.0 指南">
+  <meta itemprop="description" content="操作系统：
+CentOS7
+$ uname -a Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux Docker 版本
+$ docker version Client version: 1.7.1 Client API version: 1.19 Package Version (client): docker-1.7.1-108.el7.centos.x86_64 Go version (client): go1.4.2 Git commit (client): 3043001/1.7.1 OS/Arch (client): linux/amd64 Server version: 1.7.1 Server API version: 1.19 Package Version (server): docker-1.7.1-108.el7.centos.x86_64 Go version (server): go1.4.2 Git commit (server): 3043001/1.7.1 OS/Arch (server): linux/amd64 kubernetes 版本
+$ kubectl version Client Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;} Server Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;} ">
+  <meta itemprop="datePublished" content="2015-09-15T08:07:10+08:00">
+  <meta itemprop="dateModified" content="2015-09-15T08:07:10+08:00">
+  <meta itemprop="wordCount" content="686">
+  <meta itemprop="keywords" content="Kubernetes,Docker">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/k8s/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="kubernetes v1.0 指南">
+  <meta property="og:description" content="操作系统：
+CentOS7
+$ uname -a Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux Docker 版本
+$ docker version Client version: 1.7.1 Client API version: 1.19 Package Version (client): docker-1.7.1-108.el7.centos.x86_64 Go version (client): go1.4.2 Git commit (client): 3043001/1.7.1 OS/Arch (client): linux/amd64 Server version: 1.7.1 Server API version: 1.19 Package Version (server): docker-1.7.1-108.el7.centos.x86_64 Go version (server): go1.4.2 Git commit (server): 3043001/1.7.1 OS/Arch (server): linux/amd64 kubernetes 版本
+$ kubectl version Client Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;} Server Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;} ">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2015-09-15T08:07:10+08:00">
+    <meta property="article:modified_time" content="2015-09-15T08:07:10+08:00">
+    <meta property="article:tag" content="Kubernetes">
+    <meta property="article:tag" content="Docker">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="kubernetes v1.0 指南">
+  <meta name="twitter:description" content="操作系统：
+CentOS7
+$ uname -a Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux Docker 版本
+$ docker version Client version: 1.7.1 Client API version: 1.19 Package Version (client): docker-1.7.1-108.el7.centos.x86_64 Go version (client): go1.4.2 Git commit (client): 3043001/1.7.1 OS/Arch (client): linux/amd64 Server version: 1.7.1 Server API version: 1.19 Package Version (server): docker-1.7.1-108.el7.centos.x86_64 Go version (server): go1.4.2 Git commit (server): 3043001/1.7.1 OS/Arch (server): linux/amd64 kubernetes 版本
+$ kubectl version Client Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;} Server Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;} ">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/k8s/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">kubernetes v1.0 指南</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Sep 15, 2015</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>操作系统：</p>
+<p>CentOS7</p>
+<pre tabindex="0"><code>$ uname -a
+Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+</code></pre><p>Docker 版本</p>
+<pre tabindex="0"><code>$ docker version
+Client version: 1.7.1
+Client API version: 1.19
+Package Version (client): docker-1.7.1-108.el7.centos.x86_64
+Go version (client): go1.4.2
+Git commit (client): 3043001/1.7.1
+OS/Arch (client): linux/amd64
+Server version: 1.7.1
+Server API version: 1.19
+Package Version (server): docker-1.7.1-108.el7.centos.x86_64
+Go version (server): go1.4.2
+Git commit (server): 3043001/1.7.1
+OS/Arch (server): linux/amd64
+</code></pre><p>kubernetes 版本</p>
+<pre tabindex="0"><code>$ kubectl version
+Client Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;}
+Server Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;}
+</code></pre><p>###软件依赖</p>
+<p>master 主机</p>
+<p>etcd</p>
+<p>kube-apiserver</p>
+<p>kube-controller-manager</p>
+<p>kube-scheduler</p>
+<p>flanneld （docker 集群网络管理 可选）</p>
+<p>minion 主机</p>
+<p>kube-proxy</p>
+<p>kubelet</p>
+<p>flanneld</p>
+<p>docker</p>
+<h3 id="安装指南">安装指南</h3>
+<p>本文只介绍 CentOS7的安装方式，其他平台安装请移步 <a href="http://kubernetes.io/v1.0/gs-custom.html">这里</a></p>
+<p>kubernetes 可以运行在一台机器上也可以运行在多台机器上，本文有两台物理机器 ip 分别是 172.16.0.17（master） 和 172.16.0.18（minion）</p>
+<p>master 机器为主服务用来调度 各个minion 机器，最终应用程序容器将运行在 minion 的 Docker 容器中，当然可以在 master 机器上安装 docker 同时让其成为 minion node 机器提供服务。</p>
+<p>下面开始具体操作，注意两台机器上都需要操作这些</p>
+<p>首先先修改下系统 hosts</p>
+<pre tabindex="0"><code>$ vi /etc/hosts
+172.16.0.17   master
+172.16.0.18   minion
+</code></pre><p>添加一个软件源</p>
+<pre tabindex="0"><code>$ vi /etc/yum.repos.d/virt7-testing.repo
+[virt7-testing]
+name=virt7-testing
+baseurl=http://cbs.centos.org/repos/virt7-testing/x86_64/os/
+gpgcheck=0
+</code></pre><p>通过 yum 方式安装</p>
+<p>yum -y install &ndash;enablerepo=virt7-testing kubernetes</p>
+<p>再装个 etcd 官方文档推荐的是0.4.6这个最新的版本没有试过，这个 etcd 就是做服务发现的类zookeeper，也是 Go 语言写的</p>
+<p>yum install <a href="http://cbs.centos.org/kojifiles/packages/etcd/0.4.6/7.el7.centos/x86_64/etcd-0.4.6-7.el7.centos.x86_64.rpm">http://cbs.centos.org/kojifiles/packages/etcd/0.4.6/7.el7.centos/x86_64/etcd-0.4.6-7.el7.centos.x86_64.rpm</a>
+yum -y install &ndash;enablerepo=virt7-testing kubernetes</p>
+<p>然后在/etc/kubernetes/目录下就能看到配置文件啦，这个时候建议用官方最新的二进制包替换下 yum 源安装的二进制文件,因为 yum 源可能不是最新的可以在 github 上下载最新的<a href="https://github.com/kubernetes/kubernetes/releases/latest">点击这里</a>或者<a href="https://github.com/kubernetes/kubernetes/releases">release版列表</a></p>
+<p>然后解压里面的kubernetes/server/kubernetes-server-linux-amd64.tar.gz 把二进制文件替换到/usr/bin 下就好</p>
+<p>通过 yum 方式安装后会在/etc/kubernetes目下生成配置文件，在/usr/lib/systemd/system 目录下生成 systemctl 的 Unit 文件 （类似服务配置文件）</p>
+<p>然后开始修改/etc/kubernetes/下的配置文件了</p>
+<p>先生成一个 key</p>
+<pre tabindex="0"><code>openssl genrsa -out /tmp/serviceaccount.key 2048
+</code></pre><p>===</p>
+<p>/etc/kubernetes/apiserver</p>
+<p>注意: 这里的master 与 minion机器的apiserver 配置的区别在 KUBE_API_PORT=&quot;&ndash;port=8080&quot;
+minion 注释掉就好,仅 master 监听</p>
+<pre tabindex="0"><code>###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+
+# The address on the local server to listen to.
+KUBE_API_ADDRESS=&#34;--address=0.0.0.0&#34;
+
+# The port on the local server to listen on.
+KUBE_API_PORT=&#34;--port=8080&#34;
+
+# Port minions listen on
+# KUBELET_PORT=&#34;--kubelet_port=10250&#34;
+
+# Comma separated list of nodes in the etcd cluster 注意：etcd 这儿使用4001端口,请确保 master 机器的 etcd 监听的是此端口
+KUBE_ETCD_SERVERS=&#34;--etcd_servers=http://master:4001&#34;
+
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES=&#34;--service-cluster-ip-range=10.254.0.0/16&#34;
+
+KUBE_MASTER=&#34;--master=http://master:8080&#34;
+
+# default admission control policies
+KUBE_ADMISSION_CONTROL=&#34;--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota&#34;
+
+# Add your own! (这儿就是刚刚生成的 key)
+KUBE_API_ARGS=&#34;--service_account_key_file=/tmp/serviceaccount.key&#34;
+</code></pre><p>===
+蓝后是
+/etc/kubernetes/config
+这块 master 与 minion 都一样</p>
+<pre tabindex="0"><code>###
+# kubernetes system config
+#
+# The following values are used to configure various aspects of all
+# kubernetes services, including
+#
+#   kube-apiserver.service
+#   kube-controller-manager.service
+#   kube-scheduler.service
+#   kubelet.service
+#   kube-proxy.service
+# logging to stderr means we get it in the systemd journal
+KUBE_LOGTOSTDERR=&#34;--logtostderr=true&#34;
+
+# journal message level, 0 is debug
+KUBE_LOG_LEVEL=&#34;--v=0&#34;
+
+# Should this cluster be allowed to run privileged docker containers
+KUBE_ALLOW_PRIV=&#34;--allow_privileged=false&#34;
+
+# How the controller-manager, scheduler, and proxy find the apiserver
+KUBE_MASTER=&#34;--master=http://master:8080&#34;
+</code></pre><p>===</p>
+<p>接着
+/etc/kubernetes/controller-manager</p>
+<p>master 机器改就行了</p>
+<pre tabindex="0"><code>###
+# The following values are used to configure the kubernetes controller-manager
+
+# defaults from config and apiserver should be adequate
+
+# Add your own!
+KUBE_CONTROLLER_MANAGER_ARGS=&#34;--node-monitor-grace-period=10s --pod-eviction-timeout=10s --service_account_private_key_file=/tmp/serviceaccount.key&#34;
+</code></pre><p>接着
+/etc/kubernetes/kubelet</p>
+<p>master</p>
+<pre tabindex="0"><code>###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or &#34;&#34; for all interfaces)
+KUBELET_ADDRESS=&#34;--address=0.0.0.0&#34;
+
+# The port for the info server to serve on
+# KUBELET_PORT=&#34;--port=10250&#34;
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME=&#34;--hostname_override=master&#34;
+
+# location of the api-server
+KUBELET_API_SERVER=&#34;--api_servers=http://master:8080&#34;
+
+# Add your own!
+KUBELET_ARGS=&#34;&#34;
+</code></pre><p>minion</p>
+<pre tabindex="0"><code>###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or &#34;&#34; for all interfaces)
+KUBELET_ADDRESS=&#34;--address=0.0.0.0&#34;
+
+# The port for the info server to serve on
+# KUBELET_PORT=&#34;--port=10250&#34;
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME=&#34;--hostname_override=minion&#34;
+
+# location of the api-server
+KUBELET_API_SERVER=&#34;--api_servers=http://master:8080&#34;
+
+# Add your own!
+KUBELET_ARGS=&#34;&#34;
+</code></pre><p>这里面的KUBELET_HOSTNAME 就是后面的 node 的名称，注意这个名称似乎要在 hosts 文件种定义好</p>
+<p>===
+就这么多其他的不用改，然后依次启动服务即可</p>
+<p>master 机器上启动</p>
+<pre tabindex="0"><code>for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES
+done
+</code></pre><p>systemctl 是 centos7 的一个新增的玩意儿
+它实际上将 service 和 chkconfig 这两个命令组合到一起</p>
+<p>systemctl restart  重启某个服务
+systemctl enable 将某个服务设未开机自动运行
+systemctl status 查看某个服务运行状态 (如果启动失败这儿能看到一些错误日志)</p>
+<p>ps: systemctl 服务的单元文件在 /usr/lib/systemd/system 依赖文件在/etc/systemd/system</p>
+<p>通过 yum 方式安装完kubernetes 之后默认已经创建好了这些服务直接启动就好 : )</p>
+<p>一定要按照顺序启动,因为kubernetes 依赖 etcd 所以 etcd 得先起来,建议一个一个手动启动方便定位错误</p>
+<p>起来之后就能用 kubectl了</p>
+<pre tabindex="0"><code>[root@ip-172-16-0-17 home]# kubectl version
+Client Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;}
+Server Version: version.Info{Major:&#34;1&#34;, Minor:&#34;0&#34;, GitVersion:&#34;v1.0.4&#34;, GitCommit:&#34;65d28d5fd12345592405714c81cd03b9c41d41d9&#34;, GitTreeState:&#34;clean&#34;}
+</code></pre><p>然后在启动节点机器,可以在 master 机器和minion 机器都启用这样的话 master 同时承担折 minion 的任务</p>
+<pre tabindex="0"><code>for SERVICES in kube-proxy kubelet docker; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES
+done
+</code></pre><p>此时在 master 机器上用</p>
+<pre tabindex="0"><code>[root@ip-172-16-0-17 home]# kubectl get nodes
+NAME      LABELS                          STATUS
+master    kubernetes.io/hostname=master   Ready
+minion    kubernetes.io/hostname=minion   Ready
+</code></pre><p>其他机器用</p>
+<pre tabindex="0"><code>kubectl -s http://master:8080
+</code></pre><p>指定 master主机就行</p>
+<p>此时kubernetes 就搭建完毕了，可以用官方的 example pods 测试下 容器是否正常运行</p>
+<pre tabindex="0"><code> kubectl create -f docs/user-guide/walkthrough/pod-nginx-with-label.yaml
+</code></pre><p>这个 docs 就是之前下载的kubernetes.tar.gz</p>
+<p>这篇先到这里，后面在介绍用 flanneld 优化docker的覆盖网络</p></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/kubernetes"
+      >kubernetes</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/docker"
+      >docker</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/gitlab_bot_ci/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用gitlab 进行持续集成</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/gdb_debug_example/"
+      ><span>使用GDB调试Go语言</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,464 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>同步以太坊的ERC20所有账户的余额 - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="以太坊的账户分为外部账户和合约账户, 其中账户的资产又分为 原生币(平台币)ETH、和其他ERC标准的代币。
+按照ERC20的标准,很容易查询到当前一个账户持有某一个代币的余额(调用balanceOf方法),
+但是如果想知道一个账户持有了多少个币分别持有了多少数量,这个就不是很容易在链上查了。
+例如 etherscan.io 中的代币列表
+
+所以为了获取这个列表对应的关系, 需要把链上的数据“跑一遍”
+如何构建所有账户的代币余额帐本?
+
+
+可以收集所有的转账(Transfer)事件, 根据事件中的交易参数做加减,从而算出每个地址的余额情况
+例如
+捕获到 Transfer 事件, 能获取到转账人、接收人、转账数量、转那个币
+这个时候按照币的维度,给转账人扣除对应的数量，接收人增加上对应的数量即可
+
+
+不过这儿有几个问题, 一些合约虽然发出了Transafer 事件但是并没有实际扣除金额(这种其实不符合ERC20规范了),另外就是有一些合约初始化的时候就分配了代币给指定的地址,所以得到的数据可能不准确
+
+
+收集所有的转账事件, 根据事件中的地址实时去同步下余额
+例如每次解析Transfer 事件, 每次把 转账人、接收人的余额实时同步一下, 这样得到的结果就很准确了.
+可以做一些性能上的优化,比如去重复的(布隆过滤器), 使用multicall 批量更新
+
+
+如何获取到所有的转账事件？
+可以使用 ethereum-etl 同步指定的事件, 可以指定获取 token_transfers 事件
+截止到目前链上大约1400w个区块,大概一周的事件能更新完." />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="同步以太坊的ERC20所有账户的余额">
+  <meta itemprop="description" content="以太坊的账户分为外部账户和合约账户, 其中账户的资产又分为 原生币(平台币)ETH、和其他ERC标准的代币。
+按照ERC20的标准,很容易查询到当前一个账户持有某一个代币的余额(调用balanceOf方法), 但是如果想知道一个账户持有了多少个币分别持有了多少数量,这个就不是很容易在链上查了。
+例如 etherscan.io 中的代币列表
+所以为了获取这个列表对应的关系, 需要把链上的数据“跑一遍”
+如何构建所有账户的代币余额帐本? 可以收集所有的转账(Transfer)事件, 根据事件中的交易参数做加减,从而算出每个地址的余额情况
+例如 捕获到 Transfer 事件, 能获取到转账人、接收人、转账数量、转那个币 这个时候按照币的维度,给转账人扣除对应的数量，接收人增加上对应的数量即可
+不过这儿有几个问题, 一些合约虽然发出了Transafer 事件但是并没有实际扣除金额(这种其实不符合ERC20规范了),另外就是有一些合约初始化的时候就分配了代币给指定的地址,所以得到的数据可能不准确
+收集所有的转账事件, 根据事件中的地址实时去同步下余额
+例如每次解析Transfer 事件, 每次把 转账人、接收人的余额实时同步一下, 这样得到的结果就很准确了. 可以做一些性能上的优化,比如去重复的(布隆过滤器), 使用multicall 批量更新
+如何获取到所有的转账事件？ 可以使用 ethereum-etl 同步指定的事件, 可以指定获取 token_transfers 事件
+截止到目前链上大约1400w个区块,大概一周的事件能更新完.">
+  <meta itemprop="datePublished" content="2021-12-25T15:05:57+08:00">
+  <meta itemprop="dateModified" content="2021-12-25T15:05:57+08:00">
+  <meta itemprop="wordCount" content="40">
+  <meta itemprop="keywords" content="Eth,Erc20,Ethereum">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/synct_erc20_balance/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="同步以太坊的ERC20所有账户的余额">
+  <meta property="og:description" content="以太坊的账户分为外部账户和合约账户, 其中账户的资产又分为 原生币(平台币)ETH、和其他ERC标准的代币。
+按照ERC20的标准,很容易查询到当前一个账户持有某一个代币的余额(调用balanceOf方法), 但是如果想知道一个账户持有了多少个币分别持有了多少数量,这个就不是很容易在链上查了。
+例如 etherscan.io 中的代币列表
+所以为了获取这个列表对应的关系, 需要把链上的数据“跑一遍”
+如何构建所有账户的代币余额帐本? 可以收集所有的转账(Transfer)事件, 根据事件中的交易参数做加减,从而算出每个地址的余额情况
+例如 捕获到 Transfer 事件, 能获取到转账人、接收人、转账数量、转那个币 这个时候按照币的维度,给转账人扣除对应的数量，接收人增加上对应的数量即可
+不过这儿有几个问题, 一些合约虽然发出了Transafer 事件但是并没有实际扣除金额(这种其实不符合ERC20规范了),另外就是有一些合约初始化的时候就分配了代币给指定的地址,所以得到的数据可能不准确
+收集所有的转账事件, 根据事件中的地址实时去同步下余额
+例如每次解析Transfer 事件, 每次把 转账人、接收人的余额实时同步一下, 这样得到的结果就很准确了. 可以做一些性能上的优化,比如去重复的(布隆过滤器), 使用multicall 批量更新
+如何获取到所有的转账事件？ 可以使用 ethereum-etl 同步指定的事件, 可以指定获取 token_transfers 事件
+截止到目前链上大约1400w个区块,大概一周的事件能更新完.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-12-25T15:05:57+08:00">
+    <meta property="article:modified_time" content="2021-12-25T15:05:57+08:00">
+    <meta property="article:tag" content="Eth">
+    <meta property="article:tag" content="Erc20">
+    <meta property="article:tag" content="Ethereum">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="同步以太坊的ERC20所有账户的余额">
+  <meta name="twitter:description" content="以太坊的账户分为外部账户和合约账户, 其中账户的资产又分为 原生币(平台币)ETH、和其他ERC标准的代币。
+按照ERC20的标准,很容易查询到当前一个账户持有某一个代币的余额(调用balanceOf方法), 但是如果想知道一个账户持有了多少个币分别持有了多少数量,这个就不是很容易在链上查了。
+例如 etherscan.io 中的代币列表
+所以为了获取这个列表对应的关系, 需要把链上的数据“跑一遍”
+如何构建所有账户的代币余额帐本? 可以收集所有的转账(Transfer)事件, 根据事件中的交易参数做加减,从而算出每个地址的余额情况
+例如 捕获到 Transfer 事件, 能获取到转账人、接收人、转账数量、转那个币 这个时候按照币的维度,给转账人扣除对应的数量，接收人增加上对应的数量即可
+不过这儿有几个问题, 一些合约虽然发出了Transafer 事件但是并没有实际扣除金额(这种其实不符合ERC20规范了),另外就是有一些合约初始化的时候就分配了代币给指定的地址,所以得到的数据可能不准确
+收集所有的转账事件, 根据事件中的地址实时去同步下余额
+例如每次解析Transfer 事件, 每次把 转账人、接收人的余额实时同步一下, 这样得到的结果就很准确了. 可以做一些性能上的优化,比如去重复的(布隆过滤器), 使用multicall 批量更新
+如何获取到所有的转账事件？ 可以使用 ethereum-etl 同步指定的事件, 可以指定获取 token_transfers 事件
+截止到目前链上大约1400w个区块,大概一周的事件能更新完.">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/synct_erc20_balance/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">同步以太坊的ERC20所有账户的余额</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Dec 25, 2021</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>以太坊的<a href="https://ethereum.org/zh/developers/docs/accounts/">账户</a>分为外部账户和合约账户, 其中账户的资产又分为 原生币(平台币)ETH、和其他<a href="https://ethereum.org/zh/developers/docs/standards/tokens/erc-20/">ERC标准的代币</a>。</p>
+<p>按照ERC20的标准,很容易查询到当前一个账户持有某一个代币的余额(调用balanceOf方法),
+但是如果想知道一个账户持有了多少个币分别持有了多少数量,这个就不是很容易在链上查了。</p>
+<p>例如 etherscan.io 中的代币列表</p>
+<p><img src="/img/erc_balance.png" alt="balance"></p>
+<p>所以为了获取这个列表对应的关系, 需要把链上的数据“跑一遍”</p>
+<h1 id="如何构建所有账户的代币余额帐本">如何构建所有账户的代币余额帐本?</h1>
+<ol>
+<li>
+<p>可以收集所有的转账(Transfer)事件, 根据事件中的交易参数做加减,从而算出每个地址的余额情况</p>
+<p>例如
+捕获到 Transfer 事件, 能获取到转账人、接收人、转账数量、转那个币
+这个时候按照币的维度,给转账人扣除对应的数量，接收人增加上对应的数量即可</p>
+</li>
+</ol>
+<p>不过这儿有几个问题, 一些合约虽然发出了Transafer 事件但是并没有实际扣除金额(这种其实不符合ERC20规范了),另外就是有一些合约初始化的时候就分配了代币给指定的地址,所以得到的数据可能不准确</p>
+<ol start="2">
+<li>
+<p>收集所有的转账事件, 根据事件中的地址实时去同步下余额</p>
+<p>例如每次解析Transfer 事件, 每次把 转账人、接收人的余额实时同步一下, 这样得到的结果就很准确了.
+可以做一些性能上的优化,比如去重复的(布隆过滤器), 使用multicall 批量更新</p>
+</li>
+</ol>
+<h1 id="如何获取到所有的转账事件">如何获取到所有的转账事件？</h1>
+<p>可以使用 <a href="https://github.com/blockchain-etl/ethereum-etl">ethereum-etl</a> 同步指定的事件, 可以指定获取 token_transfers 事件</p>
+<p>截止到目前链上大约1400w个区块,大概一周的事件能更新完.</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/eth"
+      >eth</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/erc20"
+      >erc20</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/ethereum"
+      >ethereum</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/ethereum_transaction_sort/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>通过代码分析Ethereum 交易打包排序</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/sql_antlr4_example/"
+      ><span>使用antlr4 解析sql语句</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

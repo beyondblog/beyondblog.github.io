@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>K8s on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/k8s/</link>
+    <description>Recent content in K8s on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/k8s/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>https://beyondblog.github.io/posts/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突&#xA;所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;&#xA;&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;&#xA;&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;&#xA;&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;&#xA;&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+  </channel>
+</rss>

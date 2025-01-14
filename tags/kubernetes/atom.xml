@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kubernetes on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/kubernetes/</link>
+    <description>Recent content in Kubernetes on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 25 Aug 2016 08:10:46 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/kubernetes/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>https://beyondblog.github.io/posts/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突&#xA;所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;&#xA;&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;&#xA;&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;&#xA;&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;&#xA;&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>kubernetes v1.0 指南</title>
+      <link>https://beyondblog.github.io/posts/k8s/</link>
+      <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/k8s/</guid>
+      <description>&lt;p&gt;操作系统：&lt;/p&gt;&#xA;&lt;p&gt;CentOS7&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ uname -a&#xA;Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Docker 版本&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ docker version&#xA;Client version: 1.7.1&#xA;Client API version: 1.19&#xA;Package Version (client): docker-1.7.1-108.el7.centos.x86_64&#xA;Go version (client): go1.4.2&#xA;Git commit (client): 3043001/1.7.1&#xA;OS/Arch (client): linux/amd64&#xA;Server version: 1.7.1&#xA;Server API version: 1.19&#xA;Package Version (server): docker-1.7.1-108.el7.centos.x86_64&#xA;Go version (server): go1.4.2&#xA;Git commit (server): 3043001/1.7.1&#xA;OS/Arch (server): linux/amd64&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;kubernetes 版本&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl version&#xA;Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;0&amp;#34;, GitVersion:&amp;#34;v1.0.4&amp;#34;, GitCommit:&amp;#34;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;}&#xA;Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;0&amp;#34;, GitVersion:&amp;#34;v1.0.4&amp;#34;, GitCommit:&amp;#34;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;}&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>

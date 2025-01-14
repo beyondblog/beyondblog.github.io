@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>.Net on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/.net/</link>
+    <description>Recent content in .Net on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 01 Aug 2016 08:07:10 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/.net/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>.NET core for docker</title>
+      <link>https://beyondblog.github.io/posts/dotnet_core_for_docker/</link>
+      <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/dotnet_core_for_docker/</guid>
+      <description>&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;&#xA;&lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt; docker pull microsoft/dotnet:latest&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子&#xA;先创建一个 web 类型的 project&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dotnet new -t web&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果本地没有 dotnew 运行时可以docker run 一个&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>

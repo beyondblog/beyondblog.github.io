@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gdb on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/gdb/</link>
+    <description>Recent content in Gdb on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 13 Apr 2015 07:07:51 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/gdb/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用GDB调试Go语言</title>
+      <link>https://beyondblog.github.io/posts/gdb_debug_example/</link>
+      <pubDate>Mon, 13 Apr 2015 07:07:51 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/gdb_debug_example/</guid>
+      <description>&lt;p&gt;用Go语言已经有一段时间了,总结一下如何用GDB来调试它!&lt;/p&gt;&#xA;&lt;p&gt;ps:网上有很多文章都有描述,但是都不是很全面,这里将那些方法汇总一下&lt;/p&gt;&#xA;&lt;h3 id=&#34;gdb简介&#34;&gt;GDB简介&lt;/h3&gt;&#xA;&lt;pre&gt;&lt;code&gt;GDB是GNU开源组织发布的一个强大的UNIX下的程序调试工具。或许，各位比较喜欢那种图形界面方式的，像VC、BCB等IDE的调试，但如果你是在UNIX平台下做软件，你会发现GDB这个调试工具有比VC、BCB的图形化调试器更强大的功能。所谓“寸有所长，尺有所短”就是这个道理。&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;目前支持的语言 (GNU gdb (GDB) 7.8)&lt;/p&gt;&#xA;&lt;p&gt;进入 gdb之后输入 set language 可以查看支持的语言列表&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ gdb&#xA;(gdb) set language&#xA;Requires an argument. Valid arguments are auto, local, unknown, ada, c, c++, asm, minimal, d, fortran, objective-c, go, java, modula-2, opencl, pascal.&#xA;(gdb)&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>

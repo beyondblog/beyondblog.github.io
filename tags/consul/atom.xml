@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Consul on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/consul/</link>
+    <description>Recent content in Consul on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 22 Jul 2016 09:07:10 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/consul/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Consul &#43; fabio 实现自动服务发现、负载均衡</title>
+      <link>https://beyondblog.github.io/posts/consul_fabio_load_balancer/</link>
+      <pubDate>Fri, 22 Jul 2016 09:07:10 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/consul_fabio_load_balancer/</guid>
+      <description>&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Consul 介绍&lt;/li&gt;&#xA;&lt;li&gt;fabio  介绍&lt;/li&gt;&#xA;&lt;li&gt;服务发现的特点&lt;/li&gt;&#xA;&lt;li&gt;工作原理&lt;/li&gt;&#xA;&lt;li&gt;Demo&lt;/li&gt;&#xA;&lt;li&gt;结合kubernetes扩容&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;consul&#34;&gt;Consul&lt;/h3&gt;&#xA;&lt;p&gt;hashicorp团队开发 就是大名鼎鼎开发 vagrant 的团队&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://www.consul.io/&#34;&gt;Consul&lt;/a&gt; 是一个提供服务发现、健康检测、K/V存储支持分布式高可用多数据中心的服务软件&#xA;比较类似ZooKeeper但又比它多了一些功能。 具体可以参考 &lt;a href=&#34;http://dockone.io/article/300&#34;&gt;Consul和ZooKeeper的区别&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

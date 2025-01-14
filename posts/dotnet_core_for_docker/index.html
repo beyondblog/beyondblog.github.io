@@ -1,0 +1,536 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>.NET core for docker - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="本文描述下 .net core 在 docker 里面的玩法
+首先按照官方文档先 拉取镜像
+ docker pull microsoft/dotnet:latest
+然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project
+dotnet new -t web
+如果本地没有 dotnew 运行时可以docker run 一个
+docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+" />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content=".NET core for docker">
+  <meta itemprop="description" content="本文描述下 .net core 在 docker 里面的玩法
+首先按照官方文档先 拉取镜像
+docker pull microsoft/dotnet:latest 然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子 先创建一个 web 类型的 project
+dotnet new -t web 如果本地没有 dotnew 运行时可以docker run 一个
+docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/ microsoft/dotnet:latest ">
+  <meta itemprop="datePublished" content="2016-08-01T08:07:10+08:00">
+  <meta itemprop="dateModified" content="2016-08-01T08:07:10+08:00">
+  <meta itemprop="wordCount" content="492">
+  <meta itemprop="keywords" content=".Net,Docker">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/dotnet_core_for_docker/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content=".NET core for docker">
+  <meta property="og:description" content="本文描述下 .net core 在 docker 里面的玩法
+首先按照官方文档先 拉取镜像
+docker pull microsoft/dotnet:latest 然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子 先创建一个 web 类型的 project
+dotnet new -t web 如果本地没有 dotnew 运行时可以docker run 一个
+docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/ microsoft/dotnet:latest ">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2016-08-01T08:07:10+08:00">
+    <meta property="article:modified_time" content="2016-08-01T08:07:10+08:00">
+    <meta property="article:tag" content=".Net">
+    <meta property="article:tag" content="Docker">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content=".NET core for docker">
+  <meta name="twitter:description" content="本文描述下 .net core 在 docker 里面的玩法
+首先按照官方文档先 拉取镜像
+docker pull microsoft/dotnet:latest 然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子 先创建一个 web 类型的 project
+dotnet new -t web 如果本地没有 dotnew 运行时可以docker run 一个
+docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/ microsoft/dotnet:latest ">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/dotnet_core_for_docker/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">.NET core for docker</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Aug 1, 2016</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>本文描述下 .net core 在 docker 里面的玩法</p>
+<p>首先按照<a href="https://www.microsoft.com/net/core#docker">官方文档</a>先 拉取镜像</p>
+<pre tabindex="0"><code> docker pull microsoft/dotnet:latest
+</code></pre><p>然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子
+先创建一个 web 类型的 project</p>
+<pre tabindex="0"><code>dotnet new -t web
+</code></pre><p>如果本地没有 dotnew 运行时可以docker run 一个</p>
+<pre tabindex="0"><code>docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+</code></pre><p>上面这个命令的意思是 让 docker 运行(<code>docker run</code>)一个dotnet:latest的镜像(<code>microsoft/dotnet:latest</code>) 并且把本地的/home/hello_dotnet卷路径挂载到容器的/home/hello_dotnet 下面(<code>-v /home/hello_dotnet/:/home/hello_dotnet/</code>)然后提供交互式模式能够输入输出(<code>-it</code>)退出之后自动删除容器(<code>--rm</code>)</p>
+<p>然后进入容器生成类似这样</p>
+<pre tabindex="0"><code>[root@172-16-0-20 home]# docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest
+root@193fb1cf32a6:/# cd /home/hello_dotnet/
+root@193fb1cf32a6:/home/hello_dotnet# dotnet new -t web
+Created new C# project in /home/hello_dotnet.
+root@193fb1cf32a6:/home/hello_dotnet# ls
+Controllers  Data  Models  Program.cs  README.md  Services  Startup.cs  Views  appsettings.json  bower.json  gulpfile.js  package.json  project.json  web.config  wwwroot
+root@193fb1cf32a6:/home/hello_dotnet#
+</code></pre><p>然后更新下包依赖</p>
+<pre tabindex="0"><code>dotnet restore
+</code></pre><p>直接运行</p>
+<pre tabindex="0"><code>dotnet run
+</code></pre><pre tabindex="0"><code>修改一下默认的监听端口 默认是 localhost:5000 不好做代理修改成 0.0.0.0
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+
+namespace WebApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseUrls(&#34;http://0.0.0.0:5000&#34;) //添加这一行
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup&lt;Startup&gt;()
+                .Build();
+
+            host.Run();
+        }
+    }
+}
+</code></pre><p>ok 没啥问题 publish 一下</p>
+<pre tabindex="0"><code>root@193fb1cf32a6:/home/hello_dotnet# dotnet publish
+Publishing hello_dotnet for .NETCoreApp,Version=v1.0
+No executable found matching command &#34;npm&#34;
+</code></pre><p>额,并不能够 publish 提示找不到 npm, npm 这个不是 node 的包依赖工具么。。
+经过查看发现这个生成的 web 依赖了 gulp 所以很蛋疼 默认的容器只有运行时环境(可能主要是为了精简镜像)需要自己在安装 node</p>
+<p>这里可以在容器里面把 node 装好或者去其他机器上 publish</p>
+<pre tabindex="0"><code>apt-get update &amp; apt-get install npm
+</code></pre><p>并且安装完 npm 还不够 还需要 安装 bower gulp</p>
+<pre tabindex="0"><code>No executable found matching command &#34;bower&#34;
+</code></pre><pre tabindex="0"><code>No executable found matching command &#34;gulp&#34;
+</code></pre><pre tabindex="0"><code>npm install bower -g
+
+npm install gulp -g
+</code></pre><p>ok 结束了&hellip;</p>
+<pre tabindex="0"><code>Project hello_dotnet (.NETCoreApp,Version=v1.0) was previously compiled. Skipping compilation.
+Configuring the following project for use with IIS: &#39;/home/hello_dotnet/bin/Debug/netcoreapp1.0/publish&#39;
+Updating web.config at &#39;/home/hello_dotnet/bin/Debug/netcoreapp1.0/publish/web.config&#39;
+Configuring project completed successfully
+publish: Published to /home/hello_dotnet/bin/Debug/netcoreapp1.0/publish
+Published 1/1 projects successfully
+</code></pre><p>退出容器回到服务器上</p>
+<pre tabindex="0"><code>root@193fb1cf32a6:/home/hello_dotnet/bin/Debug/netcoreapp1.0# exit
+exit
+[root@172-16-0-20 home]# ls
+data  docker-compose  hello_dotnet  java  xiaoming  xiaoqiu
+[root@172-16-0-20 home]# cd hello_dotnet/
+[root@172-16-0-20 hello_dotnet]# ls
+appsettings.json  bin  bower.json  Controllers  Data  gulpfile.js  Models  node_modules  obj  package.json  Program.cs  project.json  project.lock.json  README.md  Services  Startup.cs  Views  web.config  wwwroot
+</code></pre><p>代码都已经创建好了,现在只要找个运行时 dotnet hello_dotnet.dll 就可以启动 web 了</p>
+<p>打包一个镜像 写个 dockerfile 就好</p>
+<p>先新建个工作目录整理下结构</p>
+<pre tabindex="0"><code>[root@172-16-0-20 dotnet]# tree -L 2
+.
+├── Dockerfile
+└── hello_dotnet
+    ├── appsettings.json
+    ├── bin
+    ├── bower.json
+    ├── Controllers
+    ├── Data
+    ├── gulpfile.js
+    ├── Models
+    ├── node_modules
+    ├── obj
+    ├── package.json
+    ├── Program.cs
+    ├── project.json
+    ├── project.lock.json
+    ├── README.md
+    ├── Services
+    ├── Startup.cs
+    ├── Views
+    ├── web.config
+    └── wwwroot
+</code></pre><pre tabindex="0"><code></code></pre><pre tabindex="0"><code>[root@172-16-0-20 dotnet]# docker build -t &#34;hello_dotnet:1.0&#34; ./
+
+[root@172-16-0-20 dotnet]# docker build -t &#34;hello_dotnet:1.0&#34; ./
+Sending build context to Docker daemon 53.04 MB
+Step 1 : FROM microsoft/dotnet:latest
+ ---&gt; 4028809f66a4
+Step 2 : COPY hello_dotnet /home/www
+ ---&gt; 600558b4e65d
+Removing intermediate container 0c05fc314674
+Step 3 : WORKDIR /home/www
+ ---&gt; Running in b5b029517595
+ ---&gt; c9f05e277de9
+Removing intermediate container b5b029517595
+Step 4 : EXPOSE 8080
+ ---&gt; Running in 2a00bea9393c
+ ---&gt; b921fe0482f0
+Removing intermediate container 2a00bea9393c
+Step 5 : CMD dotnet hello_dotnet.dll
+ ---&gt; Running in f770b366be81
+ ---&gt; 11027359f344
+Removing intermediate container f770b366be81
+Successfully built 11027359f344
+</code></pre><p>运行</p>
+<pre tabindex="0"><code>[root@172-16-0-20 dotnet]# docker run  --rm -it -p 8888:5000 hello_dotnet:1.0
+info: Microsoft.Extensions.DependencyInjection.DataProtectionServices[0]
+      User profile is available. Using &#39;/root/.aspnet/DataProtection-Keys&#39; as key repository; keys will not be encrypted at rest.
+Hosting environment: Production
+Content root path: /home/www
+Now listening on: http://0.0.0.0:5000
+Application started. Press Ctrl+C to shut down.
+</code></pre><p>浏览器访问 http://172.16.0.20:8888</p>
+<p>ok 一切正常
+<img src="/img/web.png" alt="image"></p>
+<p>当然也可以用守护进程的模式运行</p>
+<pre tabindex="0"><code>docker run  -d  -p 8888:5000 hello_dotnet:1.0 
+</code></pre><h3 id="参考文档">参考文档</h3>
+<p>[0] <a href="https://dotnet.github.io">https://dotnet.github.io</a></p>
+<p>[1] <a href="https://docs.docker.com/engine/reference/builder">https://docs.docker.com/engine/reference/builder</a></p></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/.net"
+      >.net</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/docker"
+      >docker</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/manual_install_kubernetes/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Centos 手动安装 Kubernetes</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/java_analysis_heap_dump/"
+      ><span>分析 heap dump 文件</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

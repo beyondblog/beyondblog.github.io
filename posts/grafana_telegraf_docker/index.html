@@ -1,0 +1,498 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-cn"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>使用grafana &#43; telegraf 快速搭建docker监控平台 - beyondのblog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="
+grafana 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能
+docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现
+telegraf
+telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
+等等 还支持第三方的服务)等众多优点" />
+  <meta name="author" content="beyondのblog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://beyondblog.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://beyondblog.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://beyondblog.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://beyondblog.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.135.0">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="使用grafana &#43; telegraf 快速搭建docker监控平台">
+  <meta itemprop="description" content="
+grafana 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能
+docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现
+telegraf telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql 等等 还支持第三方的服务)等众多优点">
+  <meta itemprop="datePublished" content="2017-02-26T17:57:04+08:00">
+  <meta itemprop="dateModified" content="2017-02-26T17:57:04+08:00">
+  <meta itemprop="wordCount" content="221">
+  <meta itemprop="keywords" content="Grafana,Docker,Monitor,Telegraf">
+  
+  <meta property="og:url" content="https://beyondblog.github.io/posts/grafana_telegraf_docker/">
+  <meta property="og:site_name" content="beyondのblog">
+  <meta property="og:title" content="使用grafana &#43; telegraf 快速搭建docker监控平台">
+  <meta property="og:description" content="
+grafana 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能
+docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现
+telegraf telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql 等等 还支持第三方的服务)等众多优点">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2017-02-26T17:57:04+08:00">
+    <meta property="article:modified_time" content="2017-02-26T17:57:04+08:00">
+    <meta property="article:tag" content="Grafana">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Monitor">
+    <meta property="article:tag" content="Telegraf">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="使用grafana &#43; telegraf 快速搭建docker监控平台">
+  <meta name="twitter:description" content="
+grafana 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能
+docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现
+telegraf telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql 等等 还支持第三方的服务)等众多优点">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://beyondblog.github.io/posts/grafana_telegraf_docker/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://beyondblog.github.io/"
+      >beyondのblog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse">
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/posts/"
+        >Post</a
+      >
+      
+      <a
+        class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+    </nav>
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">使用grafana &#43; telegraf 快速搭建docker监控平台</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Feb 26, 2017</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p><img src="/img/grafana-telegraf-system.png" alt="grafana-telegraf-system"></p>
+<p><a href="http://grafana.org">grafana</a> 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能</p>
+<p>docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现</p>
+<h2 id="telegrafhttpsdocsinfluxdatacomtelegrafv12"><a href="https://docs.influxdata.com/telegraf/v1.2/">telegraf</a></h2>
+<p>telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql
+等等 还支持第三方的服务)等众多优点</p>
+<p><a href="https://github.com/influxdata/telegraf#input-plugins">支持的收集的插件列表</a>
+例如常见的<a href="https://github.com/influxdata/telegraf/tree/master/plugins/inputs/system">系统基本信息</a> cpu 内存 网络 文件io
+都能收集,以及自定义的<a href="https://github.com/influxdata/telegraf/tree/master/plugins/inputs/httpjson">http json收集</a></p>
+<p><a href="https://github.com/influxdata/telegraf#output-plugins">支持的存放插件列表</a></p>
+<p><a href="https://docs.influxdata.com/telegraf/v1.2/introduction/installation/">安装方式也比较简单</a></p>
+<h2 id="telegrafconf">telegraf.conf</h2>
+<p>配置 telegraf的各项收集指标, 这儿简单的写一个</p>
+<pre tabindex="0"><code>[agent]
+  interval = &#34;10s&#34;
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = &#34;0s&#34;
+  flush_interval = &#34;10s&#34;
+  flush_jitter = &#34;0s&#34;
+  precision = &#34;&#34;
+  debug = false
+  quiet = false
+  hostname = &#34;&#34;
+  omit_hostname = false
+[[outputs.influxdb]]
+  urls = [&#34;http://&lt;influxdb&gt;:8086&#34;] # required
+  database = &#34;telegraf&#34; # required
+  retention_policy = &#34;&#34;
+  write_consistency = &#34;any&#34;
+  timeout = &#34;5s&#34;
+  username = &#34;user&#34;
+  password = &#34;password&#34;
+
+# 收集 cpu 磁盘 内存  docker 等
+
+[[inputs.cpu]]
+  percpu = true
+  totalcpu = true
+  fielddrop = [&#34;time_*&#34;]
+[[inputs.disk]]
+  ignore_fs = [&#34;tmpfs&#34;, &#34;devtmpfs&#34;]
+[[inputs.diskio]]
+[[inputs.kernel]]
+[[inputs.mem]]
+[[inputs.processes]]
+[[inputs.swap]]
+# docker 需要指定sock文件位置 可能还需要加个权限 sudo usermod -aG docker telegraf
+[[inputs.docker]]
+  endpoint = &#34;unix:///var/run/docker.sock&#34;
+# 收集指定网卡的网络情况
+[[inputs.net]]
+  interfaces = [&#34;eno1&#34;]
+[[inputs.system]]
+</code></pre><p>这儿把收集过来的数据存放到 influxdb中方便grfana读取,当然也可以选择其他的存储方式.</p>
+<p>官方提供的配置文件有详细的说明.</p>
+<p>配置完了之后可以启动telegraf服务,在centos 7 中 如下</p>
+<pre tabindex="0"><code>systemctl start telegraf
+</code></pre><p>也可以用docker 方式运行,这儿提供一个docker-compose</p>
+<pre tabindex="0"><code>telegraf:
+  net: &#34;host&#34;
+  container_name: telegraf
+  image: telegraf:1.2.1-alpine
+  volumes:
+    - ./config:/etc/telegraf
+    - /sys:/rootfs/sys:ro
+    - /proc:/rootfs/proc:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+  environment:
+    - &#39;HOST_PROC=/rootfs/proc&#39;
+    - &#39;HOST_SYS=/rootfs/sys&#39;
+</code></pre><h2 id="influxdb">influxdb</h2>
+<p>telegraf 允许之后就会把数据陆陆续续的写入influxdb中,这儿可以看下有那些数据.</p>
+<p><img src="/img/influxdb-telegraf.png" alt="influxdb-telegraf"></p>
+<p>如上图所示 cpu disk docker  net 等等信息均以写入influxdb中</p>
+<h2 id="grafana">grafana</h2>
+<p>grafana 新建一个graph 面板,编辑查询语句填入</p>
+<pre tabindex="0"><code>SELECT mean(&#34;usage_percent&#34;) FROM &#34;docker_container_cpu&#34; WHERE $timeFilter GROUP BY time($interval), &#34;container_name&#34; fill(null)
+</code></pre><p>查询所有主机容器的cpu使用率</p>
+<p><img src="/img/grafana-docker.png" alt="grafana-docker"></p>
+<p>自己写各种查询很繁琐官方提供了一套现成的<a href="https://grafana.net/dashboards/61">dashboard</a>直接导入即可.</p>
+<p>导入之前需要先安装<a href="https://grafana.net/plugins/grafana-piechart-panel">Pie Chart</a>插件</p>
+<p>效果如下:</p>
+<p><img src="/img/grafana-telegraf-dashboard-01.png" alt="grafana-telegraf-dashboard-01"></p>
+<p><img src="/img/grafana-telegraf-dashboard-02.png" alt="grafana-telegraf-dashboard-02"></p>
+<p>导入的东西很全,可以删除不需要的留下需要的</p>
+<p><img src="/img/dashboard-setting.png" alt="dashboard-setting"></p>
+<h2 id="alerting">Alerting</h2>
+<p>Grafana 支持Alerting 通知功能,允许添加一个条件当满足时自动出发通知</p>
+<p><img src="/img/grafana-alerting.png" alt="grafana-alerting"></p>
+<p>可以参考官方的文档 <a href="http://docs.grafana.org/alerting/rules/">alerting</a> 以及 <a href="http://docs.grafana.org/alerting/notifications/">notifications</a></p>
+<p>基本上telegraf 可以满足收集的大部分需求, 其实官方还提供了一个叫做<a href="https://github.com/influxdata/chronograf">chronograf</a> 功能和grafana类似可能更加易用</p>
+<p>还有一个叫做 <a href="https://docs.influxdata.com/kapacitor/v1.2/">kapacitor</a>的工具也是基于influxdb 做通知用的</p>
+<p>其实看下influxdata旗下的<a href="https://docs.influxdata.com/">产品</a> 可以很容易搭建一个数据分析监控系统</p></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/grafana"
+      >grafana</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/docker"
+      >docker</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/monitor"
+      >monitor</a
+    >
+     
+    <a
+      class="mb-1.5 ltr:mr-1.5 rtl:ml-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] dark:bg-white/[8%] dark:hover:bg-white/[12%]"
+      href="https://beyondblog.github.io/tags/telegraf"
+      >telegraf</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://beyondblog.github.io/posts/sql_antlr4_example/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>使用antlr4 解析sql语句</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://beyondblog.github.io/posts/manual_install_kubernetes/"
+      ><span>Centos 手动安装 Kubernetes</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2025
+    <a class="link" href="https://beyondblog.github.io/">beyondのblog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

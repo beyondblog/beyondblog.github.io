@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on beyondのblog</title>
+    <link>https://beyondblog.github.io/tags/docker/</link>
+    <description>Recent content in Docker on beyondのblog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 26 Feb 2017 17:57:04 +0800</lastBuildDate>
+    <atom:link href="https://beyondblog.github.io/tags/docker/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用grafana &#43; telegraf 快速搭建docker监控平台</title>
+      <link>https://beyondblog.github.io/posts/grafana_telegraf_docker/</link>
+      <pubDate>Sun, 26 Feb 2017 17:57:04 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/grafana_telegraf_docker/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://beyondblog.github.io/img/grafana-telegraf-system.png&#34; alt=&#34;grafana-telegraf-system&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://grafana.org&#34;&gt;grafana&lt;/a&gt; 不用在介绍了,非常好用的一款出色的度量仪表盘和图形编辑器,而且最近还新增了 Alerting 功能&lt;/p&gt;&#xA;&lt;p&gt;docker 监控有很多中方式去实现,这儿介绍使用 telegraf 来收集docker监控数据存入influxdb中,在使用grafana来做一些UI呈现&lt;/p&gt;&#xA;&lt;h2 id=&#34;telegrafhttpsdocsinfluxdatacomtelegrafv12&#34;&gt;&lt;a href=&#34;https://docs.influxdata.com/telegraf/v1.2/&#34;&gt;telegraf&lt;/a&gt;&lt;/h2&gt;&#xA;&lt;p&gt;telegraf 是用go实现的用于收集,处理和写入各种指标的代理.具有占用内存小,收集类型广(例如支持 docker, redis, hadoop, mysql&#xA;等等 还支持第三方的服务)等众多优点&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Centos 手动安装 Kubernetes</title>
+      <link>https://beyondblog.github.io/posts/manual_install_kubernetes/</link>
+      <pubDate>Thu, 25 Aug 2016 08:10:46 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/manual_install_kubernetes/</guid>
+      <description>&lt;p&gt;因为 kubernetes版本经常变动而且 yum 直接安装经常跟 docker-engine 冲突&#xA;所以需要手动安装,手动安装的方式很简单直接分析rpm包的安装方式然后替换自己喜欢的 k8s 版本即可。&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;查看rpm 安装脚本   rpm -qp &amp;ndash;scripts&lt;/li&gt;&#xA;&lt;li&gt;查看rpm 包文件列表 rpm -qpR&lt;/li&gt;&#xA;&lt;li&gt;按照yumdownloader 工具  yum -y install yum-utils &amp;amp;  yumdownloader &amp;ndash;enablerepo=epel&lt;/li&gt;&#xA;&lt;li&gt;从 yum 源下载 rpm 包 yumdownloader kubernetes-node&lt;/li&gt;&#xA;&lt;li&gt;提取rpm 包内容 rpm2cpio package.rpm | cpio -idmv&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>.NET core for docker</title>
+      <link>https://beyondblog.github.io/posts/dotnet_core_for_docker/</link>
+      <pubDate>Mon, 01 Aug 2016 08:07:10 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/dotnet_core_for_docker/</guid>
+      <description>&lt;p&gt;本文描述下 .net core 在 docker 里面的玩法&lt;/p&gt;&#xA;&lt;p&gt;首先按照&lt;a href=&#34;https://www.microsoft.com/net/core#docker&#34;&gt;官方文档&lt;/a&gt;先 拉取镜像&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt; docker pull microsoft/dotnet:latest&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后就有了 dotnet 这个运行时了,这里以一个 web 项目举例子&#xA;先创建一个 web 类型的 project&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dotnet new -t web&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果本地没有 dotnew 运行时可以docker run 一个&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker run --rm -it -v /home/hello_dotnet/:/home/hello_dotnet/  microsoft/dotnet:latest&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    <item>
+      <title>使用gitlab 进行持续集成</title>
+      <link>https://beyondblog.github.io/posts/gitlab_bot_ci/</link>
+      <pubDate>Sat, 25 Jun 2016 09:15:27 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/gitlab_bot_ci/</guid>
+      <description>&lt;p&gt;Gitlab Community Edition 有一套比较完善的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/quick_start/README.md&#34;&gt;自动构建系统&lt;/a&gt; 以及非常多的&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md&#34;&gt;hooks&lt;/a&gt;(&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/system_hooks/system_hooks.md&#34;&gt;还有这个&lt;/a&gt;) 加上&lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/triggers/README.md&#34;&gt;trigger&lt;/a&gt; 机制可以灵活的控制build任务&lt;/p&gt;&#xA;&lt;p&gt;那么利用这些个接口我们可以弄一个简单的自动构建机器人来提高团队之间的开发效率&lt;/p&gt;&#xA;&lt;p&gt;首先进入项目的Settting页面&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://ww1.sinaimg.cn/large/74311666jw1f1q9twodw5j20j60h8acf.jpg&#34; alt=&#34;add web hooks&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;这儿订阅 push 事件 comments事件 和 merge Request 事件。 如果有需要还可以开启https支持 然后填写一个url(这个就是自己实现的一个bot) 点击添加就好&lt;/p&gt;&#xA;&lt;p&gt;然后进入个人的Setting 页面获取一个private token 后面会用这个token来发消息 （建议创建一个 bot的帐号用独立的token）&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>kubernetes v1.0 指南</title>
+      <link>https://beyondblog.github.io/posts/k8s/</link>
+      <pubDate>Tue, 15 Sep 2015 08:07:10 +0800</pubDate>
+      <guid>https://beyondblog.github.io/posts/k8s/</guid>
+      <description>&lt;p&gt;操作系统：&lt;/p&gt;&#xA;&lt;p&gt;CentOS7&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ uname -a&#xA;Linux ip-172-16-0-18 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Docker 版本&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ docker version&#xA;Client version: 1.7.1&#xA;Client API version: 1.19&#xA;Package Version (client): docker-1.7.1-108.el7.centos.x86_64&#xA;Go version (client): go1.4.2&#xA;Git commit (client): 3043001/1.7.1&#xA;OS/Arch (client): linux/amd64&#xA;Server version: 1.7.1&#xA;Server API version: 1.19&#xA;Package Version (server): docker-1.7.1-108.el7.centos.x86_64&#xA;Go version (server): go1.4.2&#xA;Git commit (server): 3043001/1.7.1&#xA;OS/Arch (server): linux/amd64&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;kubernetes 版本&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl version&#xA;Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;0&amp;#34;, GitVersion:&amp;#34;v1.0.4&amp;#34;, GitCommit:&amp;#34;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;}&#xA;Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;0&amp;#34;, GitVersion:&amp;#34;v1.0.4&amp;#34;, GitCommit:&amp;#34;65d28d5fd12345592405714c81cd03b9c41d41d9&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;}&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>
